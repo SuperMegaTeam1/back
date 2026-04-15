@@ -1,0 +1,37 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feat/**
+      - fix/**
+      - chore/**
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore Back.sln
+
+      - name: Build
+        run: dotnet build Back.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test Back.sln --configuration Release --no-build
