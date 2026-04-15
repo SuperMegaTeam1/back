@@ -22,4 +22,10 @@ public sealed class HealthCheckTests : IClassFixture<WebApplicationFactory<Progr
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
+
+    [Fact]
+    public void This_test_for_check_pipline_for_fail()
+    {
+        Assert.True(false);
+    }
 }
