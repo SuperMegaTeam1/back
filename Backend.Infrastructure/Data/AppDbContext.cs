@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Back.Api.Data;
+namespace Backend.Infrastructure.Data;
 
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {

@@ -2,7 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
-namespace Back.Api.Tests;
+namespace Backend.Tests;
 
 public sealed class HealthCheckTests : IClassFixture<WebApplicationFactory<Program>>
 {
