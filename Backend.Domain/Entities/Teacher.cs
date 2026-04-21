@@ -8,7 +8,7 @@ namespace Backend.Domain.Entities
 {
     public class Teacher : BaseEntity
     {
-        public Guid UserId { get; set; }
+        public Guid ParentUserId { get; set; }
 
         public string FirstName { get; set; } = null;
         public string LastName { get; set; } = null;
