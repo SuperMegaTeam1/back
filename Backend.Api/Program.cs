@@ -12,7 +12,11 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+
+var jwtKey = jwtSettings["Key"]
+    ?? throw new InvalidOperationException("Jwt:Key is missing");
+
+var key = Encoding.UTF8.GetBytes(jwtKey);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -54,12 +58,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapControllers();
 app.MapHealthChecks("/health");
 app.MapGet("/", () => Results.Ok(new { service = "backend", status = "ok" }));
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapControllers();
 app.Run();
 
 public partial class Program;
