@@ -37,6 +37,9 @@ builder.Services.AddAuthorization();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHealthChecks();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
@@ -45,8 +48,14 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
 
 var app = builder.Build();
 
-app.MapHealthChecks("/health");
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
+app.MapControllers();
+app.MapHealthChecks("/health");
 app.MapGet("/", () => Results.Ok(new { service = "backend", status = "ok" }));
 app.UseAuthentication();
 app.UseAuthorization();
