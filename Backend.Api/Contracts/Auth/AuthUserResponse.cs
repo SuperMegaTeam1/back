@@ -9,6 +9,6 @@ namespace Backend.Api.Contracts.Auth
             string LastName,
             string? FatherName,
             string Email,
-            int UserType
+            string RoleName
         );
 }
