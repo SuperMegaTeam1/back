@@ -30,8 +30,6 @@ namespace Backend.Infrastructure.Repository
 
             return new AuthUser(
                 Id: user.Id,
-                RoleId: user.RoleId,
-                RoleName: user.UserType.ToString(),
                 FirstName: user.FirstName ?? string.Empty,
                 LastName: user.LastName ?? string.Empty,
                 FatherName: user.FatherName,

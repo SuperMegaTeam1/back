@@ -46,8 +46,6 @@ namespace Backend.Application.Services
                 Token: token,
                 new AuthUserResult(
                     Id: user.Id,
-                    RoleId: user.RoleId,
-                    RoleName: user.RoleName,
                     FirstName: user.FirstName,
                     LastName: user.LastName,
                     FatherName: user.FatherName,

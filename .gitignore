@@ -5,6 +5,8 @@ obj/
 .vscode/
 .idea/
 
+/Backend.Api/appsettings.Development.json
+
 *.user
 *.suo
 *.rsuser

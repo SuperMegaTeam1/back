@@ -30,12 +30,10 @@ namespace Backend.Api.Controllers
                 Token: result.Token,
                 User: new AuthUserResponse(
                     Id: result.User.Id,
-                    RoleId: result.User.RoleId,
                     FirstName: result.User.FirstName,
                     LastName: result.User.LastName,
                     FatherName: result.User.FatherName,
-                    Email: result.User.Email,
-                    RoleName: result.User.RoleName
+                    Email: result.User.Email
                 )
             );
 

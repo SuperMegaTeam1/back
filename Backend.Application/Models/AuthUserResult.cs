@@ -8,11 +8,9 @@ namespace Backend.Application.Models
 {
     public sealed record AuthUserResult(
         Guid Id,
-        Guid RoleId,
         string FirstName,
         string LastName,
         string? FatherName,
-        string Email,
-        string RoleName
+        string Email
     );
 }
