@@ -9,10 +9,6 @@ namespace Backend.Infrastructure.Identity
 {
     public class ApplicationUser : IdentityUser<Guid>
     {
-        public Guid RoleId { get; set; }
-
-        public int UserType { get; set; }
-
         public string? FirstName { get; set; }
 
         public string? LastName { get; set; }

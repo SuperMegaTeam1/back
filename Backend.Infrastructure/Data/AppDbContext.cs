@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Infrastructure.Identity;
 using Backend.Domain.Entities;
 using System.Text.RegularExpressions;
+using Backend.Domain.Interfaces;
 
 namespace Backend.Infrastructure.Data;
 
@@ -26,6 +27,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
 
     public override int SaveChanges()
     {
+        UpdateTimeStamps();
         return base.SaveChanges();
     }
 
@@ -37,7 +39,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
 
     private void UpdateTimeStamps()
     {
-        var entries = ChangeTracker.Entries<BaseEntity>();
+        var entries = ChangeTracker.Entries<IEntityWithChangeInfo>();
 
         foreach (var entry in entries)
         {
