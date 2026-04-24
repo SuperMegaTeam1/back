@@ -12,5 +12,8 @@ namespace Backend.Domain.Entities
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
 
+        public ICollection<Student> Students { get; set; } = new List<Student>();
+        public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
+
     }
 }
