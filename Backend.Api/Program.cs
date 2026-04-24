@@ -2,10 +2,11 @@ using Backend.Application;
 using Backend.Domain.Entities;
 using Backend.Infrastructure;
 using Backend.Infrastructure.Data;
+using Backend.Infrastructure.Data.Seeders;
 using Backend.Infrastructure.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -17,7 +18,6 @@ var jwtKey = jwtSettings["Key"]
     ?? throw new InvalidOperationException("Jwt:Key is missing");
 
 var key = Encoding.UTF8.GetBytes(jwtKey);
-
 
 builder.Services.AddAuthorization();
 
@@ -50,12 +50,27 @@ builder.Services.AddAuthentication(options =>
             IssuerSigningKey = new SymmetricSecurityKey(key)
         };
     });
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+if (!app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+
+        var db = services.GetRequiredService<AppDbContext>();
+        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+
+        await DbSeeder.SeedAsync(db, userManager, roleManager);
+    }
 }
 
 app.MapHealthChecks("/health");
