@@ -18,6 +18,8 @@ namespace Backend.Domain.Entities
         public Guid ParentUserId { get; set; }
 
         public Guid? GroupId { get; set; }
+
+        public StudyGroup? StudyGroup { get; set; }
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
         public string? FatherName { get; set; } = null;
