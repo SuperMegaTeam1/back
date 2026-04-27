@@ -5,7 +5,8 @@ using Backend.Application.Interfaces;
 
 namespace Backend.Api.Controllers
 {
-    [Route("auth")]
+    // Возможно надо будет убрать из него лишние данные. Оставить только токен
+    [Route("api")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -23,19 +24,10 @@ namespace Backend.Api.Controllers
 
             if (result == null)
             {
-                return Unauthorized();
+                return Unauthorized(); // NotFound() 401 вроде должнав прольщховаться проверить
             }
 
-            var response = new AuthResponse(
-                Token: result.Token,
-                User: new AuthUserResponse(
-                    Id: result.User.Id,
-                    FirstName: result.User.FirstName,
-                    LastName: result.User.LastName,
-                    FatherName: result.User.FatherName,
-                    Email: result.User.Email
-                )
-            );
+            var response = new AuthResponse(Token: result.Token);
 
             return Ok(response);
         }
