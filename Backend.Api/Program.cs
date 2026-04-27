@@ -46,17 +46,19 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+if (!app.Environment.IsEnvironment("Testing"))
 {
-    var services = scope.ServiceProvider;
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
 
-    var db = services.GetRequiredService<AppDbContext>();
-    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-    var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+        var db = services.GetRequiredService<AppDbContext>();
+        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
 
-    await DbSeeder.SeedAsync(db, userManager, roleManager);
+        await DbSeeder.SeedAsync(db, userManager, roleManager);
+    }
 }
-
 
 app.MapHealthChecks("/health");
 
