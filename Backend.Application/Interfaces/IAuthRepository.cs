@@ -10,6 +10,7 @@ namespace Backend.Application.Interfaces
     public interface IAuthRepository
     {
         Task<AuthUser?> FindByEmailAsync(string email);
+        Task<AuthUser?> FindByIdAsync(Guid userId);
         Task<bool> CheckPasswordAsync(Guid userId, string password);
     }
 }

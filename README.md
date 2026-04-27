@@ -33,6 +33,9 @@
     "email": "test@test.com",
     "password": "Test123!"
 }
+
+student@test.com / Test123!
+teacher@test.com / Test123!
 ```
 
 
