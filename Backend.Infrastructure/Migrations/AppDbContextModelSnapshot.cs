@@ -57,7 +57,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Lessons");
+                    b.ToTable("Lessons", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.LessonParticipation", b =>
@@ -75,7 +75,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasIndex("LessonId");
 
-                    b.ToTable("LessonParticipations");
+                    b.ToTable("LessonParticipations", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.Student", b =>
@@ -114,7 +114,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasIndex("StudyGroupId");
 
-                    b.ToTable("Students");
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.StudentGrade", b =>
@@ -132,7 +132,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasIndex("LessonId");
 
-                    b.ToTable("StudentGrades");
+                    b.ToTable("StudentGrades", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.StudentRating", b =>
@@ -150,7 +150,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("StudentRatings");
+                    b.ToTable("StudentRatings", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.StudyGroup", b =>
@@ -159,13 +159,19 @@ namespace Backend.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
-                    b.ToTable("StudyGroups");
+                    b.ToTable("StudyGroups", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.SubjectEntity", b =>
@@ -191,7 +197,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Subjects");
+                    b.ToTable("Subjects", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.Teacher", b =>
@@ -222,7 +228,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teachers");
+                    b.ToTable("Teachers", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Infrastructure.Identity.ApplicationRole", b =>
