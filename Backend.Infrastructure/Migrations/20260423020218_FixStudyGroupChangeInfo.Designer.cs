@@ -3,6 +3,7 @@ using System;
 using Backend.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260423020218_FixStudyGroupChangeInfo")]
+    partial class FixStudyGroupChangeInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,11 +37,11 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<DateTime>("EndsAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("StartsAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("StudyGroupId")
-                        .HasColumnType("uuid");
 
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
@@ -51,31 +54,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudyGroupId");
-
-                    b.HasIndex("SubjectId");
-
-                    b.HasIndex("TeacherId");
-
                     b.ToTable("Lessons");
-                });
-
-            modelBuilder.Entity("Backend.Domain.Entities.LessonParticipation", b =>
-                {
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("LessonId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Attended")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("StudentId", "LessonId");
-
-                    b.HasIndex("LessonId");
-
-                    b.ToTable("LessonParticipations");
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.Student", b =>
@@ -104,53 +83,12 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<Guid>("ParentUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("StudyGroupId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudyGroupId");
-
                     b.ToTable("Students");
-                });
-
-            modelBuilder.Entity("Backend.Domain.Entities.StudentGrade", b =>
-                {
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("LessonId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Grade")
-                        .HasColumnType("integer");
-
-                    b.HasKey("StudentId", "LessonId");
-
-                    b.HasIndex("LessonId");
-
-                    b.ToTable("StudentGrades");
-                });
-
-            modelBuilder.Entity("Backend.Domain.Entities.StudentRating", b =>
-                {
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("SubjectId")
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("Rating")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("StudentId", "SubjectId");
-
-                    b.HasIndex("SubjectId");
-
-                    b.ToTable("StudentRatings");
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.StudyGroup", b =>
@@ -159,9 +97,15 @@ namespace Backend.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -189,8 +133,6 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TeacherId");
-
                     b.ToTable("Subjects");
                 });
 
@@ -204,6 +146,7 @@ namespace Backend.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("FatherName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FirstName")
@@ -442,110 +385,6 @@ namespace Backend.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Backend.Domain.Entities.Lesson", b =>
-                {
-                    b.HasOne("Backend.Domain.Entities.StudyGroup", "StudyGroup")
-                        .WithMany("Lessons")
-                        .HasForeignKey("StudyGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Domain.Entities.SubjectEntity", "Subject")
-                        .WithMany("Lessons")
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Domain.Entities.Teacher", "Teacher")
-                        .WithMany("Lessons")
-                        .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("StudyGroup");
-
-                    b.Navigation("Subject");
-
-                    b.Navigation("Teacher");
-                });
-
-            modelBuilder.Entity("Backend.Domain.Entities.LessonParticipation", b =>
-                {
-                    b.HasOne("Backend.Domain.Entities.Lesson", "Lesson")
-                        .WithMany("Participations")
-                        .HasForeignKey("LessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Domain.Entities.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lesson");
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("Backend.Domain.Entities.Student", b =>
-                {
-                    b.HasOne("Backend.Domain.Entities.StudyGroup", "StudyGroup")
-                        .WithMany("Students")
-                        .HasForeignKey("StudyGroupId");
-
-                    b.Navigation("StudyGroup");
-                });
-
-            modelBuilder.Entity("Backend.Domain.Entities.StudentGrade", b =>
-                {
-                    b.HasOne("Backend.Domain.Entities.Lesson", "Lesson")
-                        .WithMany("Grades")
-                        .HasForeignKey("LessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Domain.Entities.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lesson");
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("Backend.Domain.Entities.StudentRating", b =>
-                {
-                    b.HasOne("Backend.Domain.Entities.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Domain.Entities.SubjectEntity", "Subject")
-                        .WithMany()
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Student");
-
-                    b.Navigation("Subject");
-                });
-
-            modelBuilder.Entity("Backend.Domain.Entities.SubjectEntity", b =>
-                {
-                    b.HasOne("Backend.Domain.Entities.Teacher", "Teacher")
-                        .WithMany()
-                        .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Teacher");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Backend.Infrastructure.Identity.ApplicationRole", null)
@@ -595,30 +434,6 @@ namespace Backend.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Backend.Domain.Entities.Lesson", b =>
-                {
-                    b.Navigation("Grades");
-
-                    b.Navigation("Participations");
-                });
-
-            modelBuilder.Entity("Backend.Domain.Entities.StudyGroup", b =>
-                {
-                    b.Navigation("Lessons");
-
-                    b.Navigation("Students");
-                });
-
-            modelBuilder.Entity("Backend.Domain.Entities.SubjectEntity", b =>
-                {
-                    b.Navigation("Lessons");
-                });
-
-            modelBuilder.Entity("Backend.Domain.Entities.Teacher", b =>
-                {
-                    b.Navigation("Lessons");
                 });
 #pragma warning restore 612, 618
         }

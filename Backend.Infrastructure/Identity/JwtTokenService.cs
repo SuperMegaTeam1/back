@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Backend.Application.Interfaces;
+using Backend.Application.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -6,7 +9,7 @@ using System.Text;
 
 namespace Backend.Infrastructure.Identity
 {
-    public class JwtTokenService
+    public class JwtTokenService: ITokenService
     {
         private readonly IConfiguration _configuration;
 
@@ -15,7 +18,7 @@ namespace Backend.Infrastructure.Identity
             _configuration = configuration;
         }
 
-        public string CreateToken(ApplicationUser user)
+        public string CreateToken(AuthUser user)
         {
             var jwt = _configuration.GetSection("Jwt");
 
@@ -28,6 +31,7 @@ namespace Backend.Infrastructure.Identity
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email ?? ""),
+                new Claim(ClaimTypes.Role, user.RoleName?.ToString())
             };
 
             var token = new JwtSecurityToken(

@@ -27,5 +27,16 @@
     dotnet ef migrations add MigrationName
     dotnet ef database update
 
+Тестовый пользователь данные:
+```aiignore
+{
+    "email": "test@test.com",
+    "password": "Test123!"
+}
+
+student@test.com / Test123!
+teacher@test.com / Test123!
+```
+
 
 

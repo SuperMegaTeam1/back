@@ -1,7 +1,12 @@
+using Backend.Application.Interfaces;
 using Backend.Infrastructure.Data;
+using Backend.Infrastructure.Identity;
+using Backend.Infrastructure.Repositories;
+using Backend.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 
 namespace Backend.Infrastructure;
 
@@ -16,6 +21,9 @@ public static class DependencyInjection
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             options.UseNpgsql(connectionString);
         });
+        services.AddScoped<ITokenService, JwtTokenService>();
+        services.AddScoped<IAuthRepository, AuthRepository>();
+        services.AddScoped<IScheduleRepository, ScheduleRepository>();
 
         return services;
     }
