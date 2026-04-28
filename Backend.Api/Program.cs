@@ -58,7 +58,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-if (!app.Environment.IsEnvironment("Testing"))
+if (!app.Environment.IsDevelopment())
 {
     using (var scope = app.Services.CreateScope())
     {

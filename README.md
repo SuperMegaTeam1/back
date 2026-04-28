@@ -2,9 +2,9 @@
 
 ## Инструкция по установке:
 
-1. Подтягиваем изменения из промежуточной ветки dev:
+1. Подтягиваем изменения из main:
 
-    ```git pull origin dev```
+    ```git pull origin main```
 
 2. Настраиваем *appsettings.json* для работы с БД  согласно примеру в *appsettings.example.json*: 
 Для этого должна быть создана база данных (```CREATE DATABASE moi-ivmiit-db```).
