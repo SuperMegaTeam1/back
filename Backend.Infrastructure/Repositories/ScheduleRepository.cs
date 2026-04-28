@@ -47,7 +47,7 @@ namespace Backend.Infrastructure.Repositories
             {
                 var group = await _dbContext.StudyGroups.FirstOrDefaultAsync(x => x.Id == student.GroupId);
                 var lessons = await _dbContext.Lessons
-                    .Where(x => x.GroupId == group.Id) // todo доделать выборку по дате
+                    .Where(x => x.StudyGroupId == group.Id) // todo доделать выборку по дате
                     .Where(x => DateOnly.FromDateTime(x.StartsAt) == date)
                     .ToListAsync();
 
@@ -98,7 +98,7 @@ namespace Backend.Infrastructure.Repositories
                         .FirstOrDefaultAsync(x => x.Id == lesson.SubjectId);
 
                     var group = await _dbContext.StudyGroups
-                        .FirstOrDefaultAsync(x => x.Id == lesson.GroupId);
+                        .FirstOrDefaultAsync(x => x.Id == lesson.StudyGroupId);
 
                     if (subject is null || group is null)
                         continue;

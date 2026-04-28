@@ -20,9 +20,14 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<SubjectEntity> Subjects { get; set; }
     public DbSet<Lesson> Lessons { get; set; }
 
+    public DbSet<LessonParticipation> LessonParticipations { get; set; }
+    public DbSet<StudentGrade> StudentGrades { get; set; }
+    public DbSet<StudentRating> StudentRatings { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 
     public override int SaveChanges()
