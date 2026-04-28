@@ -3,6 +3,7 @@ using System;
 using Backend.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260423120919_EntitiesRelationsAdded")]
+    partial class EntitiesRelationsAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,6 +36,9 @@ namespace Backend.Infrastructure.Migrations
 
                     b.Property<DateTime>("EndsAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("StartsAt")
                         .HasColumnType("timestamp with time zone");
@@ -57,7 +63,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Lessons", (string)null);
+                    b.ToTable("Lessons");
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.LessonParticipation", b =>
@@ -75,7 +81,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasIndex("LessonId");
 
-                    b.ToTable("LessonParticipations", (string)null);
+                    b.ToTable("LessonParticipations");
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.Student", b =>
@@ -114,7 +120,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasIndex("StudyGroupId");
 
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.StudentGrade", b =>
@@ -132,7 +138,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasIndex("LessonId");
 
-                    b.ToTable("StudentGrades", (string)null);
+                    b.ToTable("StudentGrades");
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.StudentRating", b =>
@@ -150,7 +156,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("StudentRatings", (string)null);
+                    b.ToTable("StudentRatings");
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.StudyGroup", b =>
@@ -171,7 +177,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("StudyGroups", (string)null);
+                    b.ToTable("StudyGroups");
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.SubjectEntity", b =>
@@ -197,7 +203,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Subjects", (string)null);
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("Backend.Domain.Entities.Teacher", b =>
@@ -228,7 +234,7 @@ namespace Backend.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teachers", (string)null);
+                    b.ToTable("Teachers");
                 });
 
             modelBuilder.Entity("Backend.Infrastructure.Identity.ApplicationRole", b =>

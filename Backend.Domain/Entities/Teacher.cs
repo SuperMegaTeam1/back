@@ -1,9 +1,4 @@
-﻿using Backend.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Backend.Domain.Interfaces;
 
 namespace Backend.Domain.Entities
 {
@@ -18,5 +13,6 @@ namespace Backend.Domain.Entities
         public string LastName { get; set; } = null;
 
         public string? FatherName { get; set; } = null;
+        public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
     }
 }
