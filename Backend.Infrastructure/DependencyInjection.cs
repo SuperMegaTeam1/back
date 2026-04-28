@@ -1,12 +1,10 @@
-using Backend.Application.Interfaces;
 using Backend.Infrastructure.Data;
-using Backend.Infrastructure.Identity;
-using Backend.Infrastructure.Repositories;
-using Backend.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
+using Backend.Application.Interfaces;
+using Backend.Infrastructure.Identity;
+using Backend.Infrastructure.Repository;
 
 namespace Backend.Infrastructure;
 
@@ -23,7 +21,6 @@ public static class DependencyInjection
         });
         services.AddScoped<ITokenService, JwtTokenService>();
         services.AddScoped<IAuthRepository, AuthRepository>();
-        services.AddScoped<IScheduleRepository, ScheduleRepository>();
 
         return services;
     }

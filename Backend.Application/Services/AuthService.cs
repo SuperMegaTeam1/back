@@ -1,9 +1,18 @@
-using Backend.Application.Interfaces;
+﻿using Backend.Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Backend.Application.Models;
+using Microsoft.AspNetCore.Authentication;
+using System.Runtime.InteropServices;
+
 
 namespace Backend.Application.Services
 {
-    public sealed class AuthService : IAuthService
+    public sealed class AuthService: IAuthService
     {
         private readonly IAuthRepository _authRepository;
         private readonly ITokenService _tokenService;
@@ -15,7 +24,6 @@ namespace Backend.Application.Services
             _authRepository = authRepository;
             _tokenService = tokenService;
         }
-
         public async Task<AuthResult?> LoginAsync(string email, string password)
         {
             var user = await _authRepository.FindByEmailAsync(email);
@@ -36,34 +44,12 @@ namespace Backend.Application.Services
 
             return new AuthResult(
                 Token: token,
-                User: MapToResult(user));
-        }
-
-        public async Task<AuthUserResult?> GetByIdAsync(Guid userId)
-        {
-            var user = await _authRepository.FindByIdAsync(userId);
-
-            if (user is null)
-            {
-                return null;
-            }
-
-            return MapToResult(user);
-        }
-
-        private static AuthUserResult MapToResult(AuthUser user)
-        {
-            return new AuthUserResult(
-                Id: user.Id,
-                RoleName: user.RoleName,
-                FirstName: user.FirstName,
-                LastName: user.LastName,
-                FatherName: user.FatherName,
-                Email: user.Email,
-                StudentId: user.StudentId,
-                TeacherId: user.TeacherId,
-                GroupId: user.GroupId,
-                GroupName: user.GroupName);
+                new AuthUserResult(
+                    Id: user.Id,
+                    FirstName: user.FirstName,
+                    LastName: user.LastName,
+                    FatherName: user.FatherName,
+                    Email: user.Email));
         }
     }
 }
