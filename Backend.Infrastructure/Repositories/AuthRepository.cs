@@ -68,12 +68,12 @@ namespace Backend.Infrastructure.Repository
 
             var student = await _dbContext.Students.FirstOrDefaultAsync(x => x.ParentUserId == user.Id);
 
-            if (student?.GroupId is not null)
+            if (student?.StudyGroupId is not null)
             {
                 studentId = student.Id;
-                groupId = student.GroupId;
+                groupId = student.StudyGroupId;
 
-                var group = await _dbContext.StudyGroups.FirstOrDefaultAsync(x => x.Id == student.GroupId);
+                var group = await _dbContext.StudyGroups.FirstOrDefaultAsync(x => x.Id == student.StudyGroupId);
                 groupName = group?.Name;
             }
 

@@ -12,83 +12,20 @@ namespace Backend.Infrastructure.Data.Seeders
 {
     public static class DomainSeeder
     {
-        public static async Task SeedDomainData(
+        private static async Task<SubjectEntity> GetOrCreateSubject(
             AppDbContext db,
-            UserManager<ApplicationUser> userManager)
+            string name,
+            Guid teacherId)
         {
-            var teacherUser = await userManager.FindByEmailAsync("teacher@test.com");
-            var studentUser = await userManager.FindByEmailAsync("student@test.com");
-
-            var teacher = await db.Teachers
-                .FirstOrDefaultAsync(t => t.ParentUserId == teacherUser!.Id);
-
-            if (teacher == null)
-            {
-                teacher = new Teacher
-                {
-                    Id = Guid.NewGuid(),
-                    ParentUserId = teacherUser.Id,
-                    FirstName = teacherUser.FirstName!,
-                    LastName = teacherUser.LastName!,
-                    FatherName = teacherUser.FatherName ?? "Unknown",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
-
-                db.Teachers.Add(teacher);
-                await db.SaveChangesAsync();
-            }
-
-            var student = await db.Students
-                .FirstOrDefaultAsync(s => s.ParentUserId == studentUser!.Id);
-
-            if (student == null)
-            {
-                student = new Student
-                {
-                    Id = Guid.NewGuid(),
-                    ParentUserId = studentUser.Id,
-                    FirstName = studentUser.FirstName!,
-                    LastName = studentUser.LastName!,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
-
-                db.Students.Add(student);
-                await db.SaveChangesAsync();
-            }
-
-            var group = await db.StudyGroups
-                .FirstOrDefaultAsync(g => g.Name == "Group A");
-
-            if (group == null)
-            {
-                group = new StudyGroup
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Group A"
-                };
-
-                db.StudyGroups.Add(group);
-                await db.SaveChangesAsync();
-            }
-
-            if (student.GroupId != group.Id)
-            {
-                student.GroupId = group.Id;
-                await db.SaveChangesAsync();
-            }
-
-            var subject = await db.Subjects
-                .FirstOrDefaultAsync(s => s.Name == "Math");
+            var subject = await db.Subjects.FirstOrDefaultAsync(s => s.Name == name);
 
             if (subject == null)
             {
                 subject = new SubjectEntity
                 {
                     Id = Guid.NewGuid(),
-                    Name = "Math",
-                    TeacherId = teacher.Id,
+                    Name = name,
+                    TeacherId = teacherId,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
@@ -97,65 +34,179 @@ namespace Backend.Infrastructure.Data.Seeders
                 await db.SaveChangesAsync();
             }
 
-            var lesson = await db.Lessons
-                .FirstOrDefaultAsync(l => l.SubjectId == subject.Id);
+            return subject;
+        }
 
-            if (lesson == null)
+        private static async Task SeedSchedule(AppDbContext db, Guid groupId, Guid teacherId, List<Guid> subjectIds)
+        {
+            var today = DateTime.UtcNow.Date;
+
+            if (await db.Lessons.AnyAsync(l => l.StudyGroupId == groupId && l.StartsAt.Date == today))
+                return;
+
+            var lessons = new List<Lesson>();
+
+            var lessonStartTimes = new[]
             {
-                lesson = new Lesson
+                today.AddHours(8),
+                today.AddHours(10),
+                today.AddHours(12),
+                today.AddHours(14)
+            };
+
+            for (int i = 0; i < lessonStartTimes.Length; i++)
+            {
+                var subjectId = subjectIds[i % subjectIds.Count];
+
+                lessons.Add(new Lesson
                 {
                     Id = Guid.NewGuid(),
-                    StudyGroupId = group.Id, 
-                    TeacherId = teacher.Id,
-                    SubjectId = subject.Id,
-                    StartsAt = DateTime.UtcNow.AddDays(1),
-                    EndsAt = DateTime.UtcNow.AddDays(1).AddHours(2),
+                    StudyGroupId = groupId,
+                    TeacherId = teacherId,
+                    SubjectId = subjectId,
+                    StartsAt = lessonStartTimes[i],
+                    EndsAt = lessonStartTimes[i].AddHours(1).AddMinutes(30),
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                });
+            }
+
+            db.Lessons.AddRange(lessons);
+            await db.SaveChangesAsync();
+        }
+        public static async Task SeedDomainData(
+            AppDbContext db,
+            UserManager<ApplicationUser> userManager)
+        {
+            var teacherUser = await userManager.FindByEmailAsync("teacher@test.com");
+            var studentUser = await userManager.FindByEmailAsync("student@test.com");
+
+            var teacher = await db.Teachers.FirstOrDefaultAsync();
+
+            if (teacher == null)
+            {
+                teacher = new Teacher
+                {
+                    Id = Guid.NewGuid(),
+                    ParentUserId = teacherUser!.Id,
+                    FirstName = teacherUser.FirstName!,
+                    LastName = teacherUser.LastName!,
+                    FatherName = teacherUser.FatherName,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
 
-                db.Lessons.Add(lesson);
+                db.Teachers.Add(teacher);
                 await db.SaveChangesAsync();
             }
 
-            if (!await db.LessonParticipations.AnyAsync(x =>
-                    x.StudentId == student.Id && x.LessonId == lesson.Id))
+            var groupA = await db.StudyGroups.FirstOrDefaultAsync(g => g.Name == "Group A");
+            if (groupA == null)
             {
-                db.LessonParticipations.Add(new LessonParticipation
-                {
-                    StudentId = student.Id,
-                    LessonId = lesson.Id,
-                    Attended = true
-                });
-
-                await db.SaveChangesAsync();
+                groupA = new StudyGroup { Id = Guid.NewGuid(), Name = "Group A" };
+                db.StudyGroups.Add(groupA);
             }
 
-            if (!await db.StudentGrades.AnyAsync(x =>
-                    x.StudentId == student.Id && x.LessonId == lesson.Id))
+            var groupB = await db.StudyGroups.FirstOrDefaultAsync(g => g.Name == "Group B");
+            if (groupB == null)
             {
-                db.StudentGrades.Add(new StudentGrade
-                {
-                    StudentId = student.Id,
-                    LessonId = lesson.Id,
-                    Grade = 5
-                });
-
-                await db.SaveChangesAsync();
+                groupB = new StudyGroup { Id = Guid.NewGuid(), Name = "Group B" };
+                db.StudyGroups.Add(groupB);
             }
 
-            if (!await db.StudentRatings.AnyAsync(x =>
-                    x.StudentId == student.Id && x.SubjectId == subject.Id))
+            await db.SaveChangesAsync();
+
+            var math = await GetOrCreateSubject(db, "Матанализ", teacher.Id);
+            var physics = await GetOrCreateSubject(db, "Физика", teacher.Id);
+
+            var students = new List<Student>();
+
+            for (int i = 1; i <= 5; i++)
             {
-                db.StudentRatings.Add(new StudentRating
-                {
-                    StudentId = student.Id,
-                    SubjectId = subject.Id,
-                    Rating = 5
-                });
+                var user = await userManager.FindByEmailAsync($"student{i}@test.com");
 
-                await db.SaveChangesAsync();
+                if (user == null)
+                {
+                    user = new ApplicationUser
+                    {
+                        UserName = $"student{i}@test.com",
+                        Email = $"student{i}@test.com",
+                        FirstName = $"Student{i}",
+                        LastName = "Test"
+                    };
+
+                    await userManager.CreateAsync(user, "Password123!");
+                    await userManager.AddToRoleAsync(user, "Student");
+                }
+
+                var student = await db.Students.FirstOrDefaultAsync(s => s.ParentUserId == user.Id);
+
+                if (student == null)
+                {
+                    student = new Student
+                    {
+                        Id = Guid.NewGuid(),
+                        ParentUserId = user.Id,
+                        FirstName = user.FirstName!,
+                        LastName = user.LastName!,
+                        StudyGroupId = i % 2 == 0 ? groupA.Id : groupB.Id,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+
+                    db.Students.Add(student);
+                }
+
+                students.Add(student);
             }
+
+            await db.SaveChangesAsync();
+
+            var lesson = new Lesson
+            {
+                Id = Guid.NewGuid(),
+                StudyGroupId = groupA.Id,
+                TeacherId = teacher.Id,
+                SubjectId = math.Id,
+                StartsAt = DateTime.UtcNow,
+                EndsAt = DateTime.UtcNow.AddHours(2),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            db.Lessons.Add(lesson);
+            await db.SaveChangesAsync();
+
+            var rnd = new Random();
+
+            foreach (var student in students)
+            {
+                if (!db.StudentGrades.Any(g => g.StudentId == student.Id))
+                {
+                    db.StudentGrades.Add(new StudentGrade
+                    {
+                        StudentId = student.Id,
+                        LessonId = lesson.Id,
+                        Grade = rnd.Next(60, 100)
+                    });
+                }
+            }
+
+            var subjects = await db.Subjects
+                .Where(s => s.TeacherId == teacher.Id)
+                .Select(s => s.Id)
+                .ToListAsync();
+
+            await SeedSchedule(
+                db,
+                groupB.Id,
+                teacher.Id,
+                subjects
+            );
+
+            await db.SaveChangesAsync();
         }
+
+
     }
 }
