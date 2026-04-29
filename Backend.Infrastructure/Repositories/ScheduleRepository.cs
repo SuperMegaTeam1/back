@@ -4,6 +4,7 @@ using Backend.Domain.Entities;
 using Backend.Infrastructure.Data;
 using Backend.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,28 @@ namespace Backend.Infrastructure.Repositories
         {
             _userManager = userManager;
             _dbContext = dbContext;
+        }
+
+        public async Task<IReadOnlyCollection<TodayScheduleResult>> GetWeekScheduleAsync(Guid userId, DateOnly monday, DateOnly saturday)
+        {
+            var schedule = new List<TodayScheduleResult>();
+
+            for (var day = monday; day <= saturday; day = day.AddDays(1))
+            {
+                var ScheduleDay = await GetTodayScheduleAsync(userId, day);
+
+                schedule.Add(
+                    new TodayScheduleResult(
+                        Date: day.ToString("yyyy-MM-dd"),
+                        DayName : day.ToString("dddd"),
+                        WeekNumber: null,
+                        LessonsWeek: null,
+                        Items : ScheduleDay
+                    )
+                );
+            }
+
+            return schedule;
         }
 
         public async Task<IReadOnlyCollection<ScheduleLessonsResult>> GetTodayScheduleAsync(Guid userId, DateOnly? date)

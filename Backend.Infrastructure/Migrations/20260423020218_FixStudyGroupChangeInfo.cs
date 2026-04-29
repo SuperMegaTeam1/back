@@ -11,13 +11,13 @@ namespace Backend.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            //migrationBuilder.DropColumn(
-            //    name: "RoleId",
-            //    table: "AspNetUsers");
+            migrationBuilder.DropColumn(
+                name: "RoleId",
+                table: "AspNetUsers");
 
-            //migrationBuilder.DropColumn(
-            //    name: "UserType",
-            //    table: "AspNetUsers");
+            migrationBuilder.DropColumn(
+                name: "UserType",
+                table: "AspNetUsers");
         }
 
         /// <inheritdoc />

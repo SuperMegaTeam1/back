@@ -1,5 +1,5 @@
 using Backend.Application.Interfaces;
-using Backend.Application.Models;
+using Backend.Application.Models.Auth;
 using Backend.Infrastructure.Data;
 using Backend.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Backend.Application.Models
+namespace Backend.Application.Models.Auth
 {
-    public sealed record AuthUserResult(
+    public sealed record AuthUser(
         Guid Id,
         string RoleName,
         string FirstName,

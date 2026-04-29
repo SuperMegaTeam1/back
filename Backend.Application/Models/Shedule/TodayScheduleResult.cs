@@ -10,7 +10,7 @@ namespace Backend.Application.Models.Shedule
     public sealed record TodayScheduleResult(
         string Date,
         string DayName,
-        int WeekNumber,
-        int LessonsWeek,
+        int? WeekNumber,
+        int? LessonsWeek,
         IReadOnlyCollection<ScheduleLessonsResult>? Items);
 }

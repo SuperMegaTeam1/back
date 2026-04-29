@@ -10,5 +10,6 @@ namespace Backend.Application.Interfaces
     public interface IScheduleService
     {
         Task<TodayScheduleResult> GetTodayScheduleAsync(Guid userId, DateOnly? date);
+        Task<WeekScheduleResult> GetWeekScheduleAsync(Guid userId, DateOnly? date);
     }
 }

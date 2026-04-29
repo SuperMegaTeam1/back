@@ -17,11 +17,40 @@ namespace Backend.Application.Services
             _scheduleRepository = scheduleRepository;
         }
 
+        public async Task<WeekScheduleResult> GetWeekScheduleAsync(Guid userId, DateOnly? date)
+        {
+            var actualDate = date ?? DateOnly.FromDateTime(DateTime.UtcNow);
+
+            var (monday, saturday) = StartEndDay(actualDate);
+
+            var items = await _scheduleRepository.GetWeekScheduleAsync(userId, monday, saturday);
+            
+            if (items == null)
+            {
+                return null;
+            }
+
+            return new WeekScheduleResult(
+                DateStart: monday.ToString(),
+                DateEnd: saturday.ToString(),
+                Items: items
+            );
+        }
+
+        private (DateOnly monday, DateOnly saturday) StartEndDay(DateOnly date)
+        {
+            var dayOfWeek = (int)date.DayOfWeek;
+            var monday = date.AddDays(-dayOfWeek + 1);
+            var saturday = monday.AddDays(5);
+
+            return (monday, saturday);
+        }
+
         public async Task<TodayScheduleResult> GetTodayScheduleAsync(Guid userId, DateOnly? date)
         {
             var actualDate = date ?? DateOnly.FromDateTime(DateTime.UtcNow);
 
-            var items = await _scheduleRepository.GetTodayScheduleAsync(userId, date);
+            var items = await _scheduleRepository.GetTodayScheduleAsync(userId, actualDate);
 
             if (items == null)
             {
