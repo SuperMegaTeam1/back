@@ -43,9 +43,9 @@ namespace Backend.Infrastructure.Repositories
                 return null;
             }
 
-            if (student.GroupId is not null)
+            if (student.StudyGroup is not null)
             {
-                var group = await _dbContext.StudyGroups.FirstOrDefaultAsync(x => x.Id == student.GroupId);
+                var group = await _dbContext.StudyGroups.FirstOrDefaultAsync(x => x.Id == student.StudyGroupId);
                 var lessons = await _dbContext.Lessons
                     .Where(x => x.StudyGroupId == group.Id) // todo доделать выборку по дате
                     .Where(x => DateOnly.FromDateTime(x.StartsAt) == date)
