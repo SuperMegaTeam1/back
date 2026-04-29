@@ -36,6 +36,44 @@ namespace Backend.Infrastructure.Data.Seeders
 
             return subject;
         }
+
+        private static async Task SeedSchedule(AppDbContext db, Guid groupId, Guid teacherId, List<Guid> subjectIds)
+        {
+            var today = DateTime.UtcNow.Date;
+
+            if (await db.Lessons.AnyAsync(l => l.StudyGroupId == groupId && l.StartsAt.Date == today))
+                return;
+
+            var lessons = new List<Lesson>();
+
+            var lessonStartTimes = new[]
+            {
+                today.AddHours(8),
+                today.AddHours(10),
+                today.AddHours(12),
+                today.AddHours(14)
+            };
+
+            for (int i = 0; i < lessonStartTimes.Length; i++)
+            {
+                var subjectId = subjectIds[i % subjectIds.Count];
+
+                lessons.Add(new Lesson
+                {
+                    Id = Guid.NewGuid(),
+                    StudyGroupId = groupId,
+                    TeacherId = teacherId,
+                    SubjectId = subjectId,
+                    StartsAt = lessonStartTimes[i],
+                    EndsAt = lessonStartTimes[i].AddHours(1).AddMinutes(30),
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                });
+            }
+
+            db.Lessons.AddRange(lessons);
+            await db.SaveChangesAsync();
+        }
         public static async Task SeedDomainData(
             AppDbContext db,
             UserManager<ApplicationUser> userManager)
@@ -154,7 +192,21 @@ namespace Backend.Infrastructure.Data.Seeders
                 }
             }
 
+            var subjects = await db.Subjects
+                .Where(s => s.TeacherId == teacher.Id)
+                .Select(s => s.Id)
+                .ToListAsync();
+
+            await SeedSchedule(
+                db,
+                groupB.Id,
+                teacher.Id,
+                subjects
+            );
+
             await db.SaveChangesAsync();
         }
+
+
     }
 }
