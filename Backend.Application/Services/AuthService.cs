@@ -22,6 +22,7 @@ namespace Backend.Application.Services
 
             if (user is null)
             {
+                Console.WriteLine("User null");
                 return null;
             }
 
@@ -29,6 +30,7 @@ namespace Backend.Application.Services
 
             if (!passwordValid)
             {
+                Console.WriteLine("Password not valid");
                 return null;
             }
 

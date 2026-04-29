@@ -24,6 +24,7 @@ namespace Backend.Api.Controllers
 
             if (result == null)
             {
+                Console.WriteLine("Тут беда");
                 return Unauthorized(); // NotFound() 401 вроде должнав прольщховаться проверить
             }
 

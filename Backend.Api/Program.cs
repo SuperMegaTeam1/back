@@ -1,3 +1,4 @@
+using Backend.Api;
 using Backend.Application;
 using Backend.Domain.Entities;
 using Backend.Infrastructure;
@@ -27,7 +28,6 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
@@ -81,6 +81,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+app.UseExcepsionHandler();
 
 if (app.Environment.IsDevelopment())
 {
