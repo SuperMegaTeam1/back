@@ -1,5 +1,5 @@
 using Backend.Application.Interfaces;
-using Backend.Application.Models;
+using Backend.Application.Models.Auth;
 
 namespace Backend.Application.Services
 {

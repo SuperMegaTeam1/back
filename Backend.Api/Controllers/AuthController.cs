@@ -24,7 +24,7 @@ namespace Backend.Api.Controllers
 
             if (result == null)
             {
-                return Unauthorized(); // NotFound() 401 вроде должнав прольщховаться проверить
+                return Unauthorized();
             }
 
             var response = new AuthResponse(Token: result.Token);

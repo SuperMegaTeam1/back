@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Backend.Application.Models
+namespace Backend.Application.Models.Auth
 {
     public sealed record AuthResult(
         string Token,

@@ -1,5 +1,5 @@
 ﻿using Backend.Application.Interfaces;
-using Backend.Application.Models;
+using Backend.Application.Models.Auth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

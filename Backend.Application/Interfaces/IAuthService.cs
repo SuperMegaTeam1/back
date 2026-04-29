@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Backend.Application.Models;
+using Backend.Application.Models.Auth;
 
 namespace Backend.Application.Interfaces
 {

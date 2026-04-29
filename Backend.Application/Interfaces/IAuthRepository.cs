@@ -1,4 +1,4 @@
-﻿using Backend.Application.Models;
+﻿using Backend.Application.Models.Auth;
 using System;
 using System.Collections.Generic;
 using System.Linq;

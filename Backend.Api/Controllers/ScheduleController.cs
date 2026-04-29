@@ -16,7 +16,7 @@ namespace Backend.Api.Controllers
         }
 
         [HttpGet("today")]
-        public async Task<IActionResult> Schedule([FromQuery] DateOnly? date) 
+        public async Task<IActionResult> Schedule([FromQuery] DateOnly? date)
         {
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -26,6 +26,21 @@ namespace Backend.Api.Controllers
             }
 
             var response = await _sheduleService.GetTodayScheduleAsync(userId, date);
+
+            return Ok(response);
+        }
+
+        [HttpGet("week")]
+        public async Task<IActionResult> ScheduleWeek([FromQuery] DateOnly? date)
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!Guid.TryParse(userIdValue, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var response = await _sheduleService.GetWeekScheduleAsync(userId, date);
 
             return Ok(response);
         }
