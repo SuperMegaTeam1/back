@@ -23,12 +23,12 @@ namespace Backend.Infrastructure.Repository
         public async Task<AuthUser?> FindByEmailAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-
+        
             if (user is null)
             {
                 return null;
             }
-
+        
             return await BuildAuthUserAsync(user);
         }
 
@@ -94,7 +94,8 @@ namespace Backend.Infrastructure.Repository
                 StudentId: studentId,
                 TeacherId: teacherId,
                 GroupId: groupId,
-                GroupName: groupName);
+                GroupName: groupName
+            );
         }
     }
 }

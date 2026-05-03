@@ -18,9 +18,9 @@ namespace Backend.Api.Controllers
             _authService = authService;
         }
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet("me")]
-        public async Task<ActionResult<AuthUserResponse>> Me()
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Student")]
+        [HttpGet("student/me")]
+        public async Task<ActionResult<AuthStudentResponse>> StudentMe()
         {
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -29,24 +29,52 @@ namespace Backend.Api.Controllers
                 return Unauthorized();
             }
 
-            var user = await _authService.GetByIdAsync(userId);
+            var student = await _authService.GetByIdAsync(userId);
 
-            if (user is null)
+            if (student is null ||  student.StudentId is null)
             {
                 return Unauthorized();
             }
 
-            var response = new AuthUserResponse(
-                Id: user.Id,
-                RoleName: user.RoleName,
-                FirstName: user.FirstName,
-                LastName: user.LastName,
-                FatherName: user.FatherName,
-                Email: user.Email,
-                StudentId: user.StudentId,
-                TeacherId: user.TeacherId,
-                GroupId: user.GroupId,
-                GroupName: user.GroupName);
+            var response = new AuthStudentResponse(
+                Id: student.Id,
+                RoleName: student.RoleName,
+                FirstName: student.FirstName,
+                LastName: student.LastName,
+                FatherName: student.FatherName,
+                Email: student.Email,
+                StudentId: student.StudentId,
+                GroupId: student.GroupId,
+                GroupName: student.GroupName);
+
+            return Ok(response);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Teacher")]
+        [HttpGet("teacher/me")]
+        public async Task<ActionResult<AuthTeacherResponse>> TeacherMe()
+        {
+            var userValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!Guid.TryParse(userValue, out var userId))
+            {
+                return Unauthorized();
+            }
+            
+            var teacher = await _authService.GetByIdAsync(userId);
+
+            if (teacher is null || teacher.TeacherId is null)
+            {
+                return Unauthorized();
+            }
+
+            var response = new AuthTeacherResponse(
+                Id: teacher.Id,
+                FirstName: teacher.FirstName,
+                LastName: teacher.LastName,
+                FatherName: teacher.FatherName,
+                Email: teacher.Email,
+                TeacherId: teacher.TeacherId);
 
             return Ok(response);
         }

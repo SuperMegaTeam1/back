@@ -2,7 +2,7 @@
 
 namespace Backend.Api.Contracts.Auth
 {
-    public sealed record AuthUserResponse(
+    public sealed record AuthStudentResponse(
             Guid Id,
             string RoleName,
             string FirstName,
@@ -10,7 +10,6 @@ namespace Backend.Api.Contracts.Auth
             string? FatherName,
             string Email,
             Guid? StudentId,
-            Guid? TeacherId,
             Guid? GroupId,
             string? GroupName
         );
