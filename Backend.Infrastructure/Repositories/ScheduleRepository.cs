@@ -33,6 +33,7 @@ namespace Backend.Infrastructure.Repositories
 
             for (var day = monday; day <= saturday; day = day.AddDays(1))
             {
+                // todo
                 var ScheduleDay = await GetTodayScheduleAsync(userId, day);
 
                 schedule.Add(
@@ -53,7 +54,9 @@ namespace Backend.Infrastructure.Repositories
         {
             var targetDate = date ?? DateOnly.FromDateTime(DateTime.UtcNow);
 
+            // todo userId
             var user = await _userManager.FindByIdAsync(userId.ToString());
+            // todo валидация в сервисе
             if (user is null)
                 return [];
 
@@ -88,6 +91,7 @@ namespace Backend.Infrastructure.Repositories
                 .OrderBy(x => x.StartsAt)
                 .ToListAsync();
 
+            // todo type, cabinet
             return lessons.Select(lesson => new ScheduleLessonsResult(
                 LessonsId: lesson.Id,
                 SubjectId: lesson.SubjectId,

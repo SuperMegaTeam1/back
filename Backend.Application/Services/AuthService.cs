@@ -1,5 +1,6 @@
 using Backend.Application.Interfaces;
 using Backend.Application.Models.Auth;
+using Microsoft.AspNetCore.Identity;
 
 namespace Backend.Application.Services
 {

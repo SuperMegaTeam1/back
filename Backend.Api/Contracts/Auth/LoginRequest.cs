@@ -4,6 +4,7 @@ namespace Backend.Api.Contracts.Auth
 {
     public sealed class LoginRequest
     {
+        // 
         [Required]
         [EmailAddress]
         public string Email { get; init; }
