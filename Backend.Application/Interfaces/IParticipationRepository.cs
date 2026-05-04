@@ -11,5 +11,7 @@ namespace Backend.Application.Interfaces
     {
         Task<LessonParticipation?> Get(Guid studentId, Guid lessonId);
         Task AddAsync(LessonParticipation participation);
+
+        Task SaveChangesAsync();
     }
 }

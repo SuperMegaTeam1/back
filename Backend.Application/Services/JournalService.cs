@@ -40,7 +40,7 @@ namespace Backend.Application.Services
                     (item.Attended != null && item.Grade != null))
                     throw new Exception("Заполните оценку либо поле о посещаемости");
 
-                var student = await _studentRepo.GetByUserIdAsync(item.StudentId)
+                var student = await _studentRepo.GetByIdAsync(item.StudentId)
                     ?? throw new Exception($"Студент {item.StudentId} не найден");
 
                 if (item.Grade != null)
@@ -51,6 +51,7 @@ namespace Backend.Application.Services
                     {
                         grade = new StudentGrade
                         {
+                            Id = Guid.NewGuid(),
                             StudentId = item.StudentId,
                             LessonId = lessonId,
                             Grade = item.Grade.Value
@@ -75,6 +76,7 @@ namespace Backend.Application.Services
                         };
 
                         await _participationRepo.AddAsync(participation);
+
                     }
                     else
                     {
@@ -105,7 +107,8 @@ namespace Backend.Application.Services
                 result.Add(item);
             }
 
-            await _lessonRepo.SaveChangesAsync();
+            await _gradeRepo.SaveChangesAsync();
+            await _participationRepo.SaveChangesAsync();
 
             return new JournalResponse
             {

@@ -26,6 +26,13 @@ namespace Backend.Infrastructure.Repositories
                 .FirstOrDefaultAsync(s => s.ParentUserId == userId);
         }
 
+        public async Task<Student?> GetByIdAsync(Guid id)
+        {
+            return await _db.Students
+                .Include(s => s.StudyGroup)
+                .FirstOrDefaultAsync(s => s.Id == id);
+        }
+
         public async Task<List<Student>> GetByGroupIdAsync(Guid groupId)
         {
             return await _db.Students

@@ -29,5 +29,10 @@ namespace Backend.Infrastructure.Repositories
         {
             await _db.LessonParticipations.AddAsync(participation);
         }
+
+        public async Task SaveChangesAsync()
+        {
+            await _db.SaveChangesAsync();
+        }
     }
 }

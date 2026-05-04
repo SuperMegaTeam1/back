@@ -8,7 +8,7 @@ namespace Backend.Domain.Entities
 {
     public class StudentGrade
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public Guid StudentId { get; set; }
         public Student Student { get; set; } = null!;
 
