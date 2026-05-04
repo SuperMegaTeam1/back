@@ -14,3 +14,4 @@ namespace Backend.Application.Models.Shedule
         int? LessonsWeek,
         IReadOnlyCollection<ScheduleLessonsResult>? Items);
 }
+    

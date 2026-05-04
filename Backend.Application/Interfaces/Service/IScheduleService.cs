@@ -13,3 +13,6 @@ namespace Backend.Application.Interfaces
         Task<WeekScheduleResult> GetWeekScheduleAsync(Guid userId, DateOnly? date);
     }
 }
+
+// так значит делаем следующим образом 
+// тут оставляем два метода а в репозиториивызываем один метод т.к. репо будет делать в зависимости от параметров день или неделя
