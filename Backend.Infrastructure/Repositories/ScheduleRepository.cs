@@ -27,57 +27,14 @@ namespace Backend.Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<IReadOnlyCollection<TodayScheduleResult>> GetWeekScheduleAsync(Guid userId, DateOnly monday, DateOnly saturday)
+        public async Task<IReadOnlyCollection<ScheduleLessonsResult>> GetScheduleAsync(Guid userId, DateOnly from, DateOnly to)
         {
-            var schedule = new List<TodayScheduleResult>();
+            var schedule = new List<ScheduleLessonsResult>();
 
-            for (var day = monday; day <= saturday; day = day.AddDays(1))
-            {
-                // todo
-                var ScheduleDay = await GetTodayScheduleAsync(userId, day);
-
-                schedule.Add(
-                    new TodayScheduleResult(
-                        Date: day.ToString("yyyy-MM-dd"),
-                        DayName : day.ToString("dddd"),
-                        WeekNumber: null,
-                        LessonsWeek: null,
-                        Items : ScheduleDay
-                    )
-                );
-            }
-
+            schedule = await _dbContext.Lessons
+                .Where(x => x.TeacherId == userId)
+            
             return schedule;
-        }
-
-        public async Task<IReadOnlyCollection<ScheduleLessonsResult>> GetTodayScheduleAsync(Guid userId, DateOnly? date)
-        {
-            var targetDate = date ?? DateOnly.FromDateTime(DateTime.UtcNow);
-
-            // todo userId
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            // todo валидация в сервисе
-            if (user is null)
-                return [];
-
-            var student = await _dbContext.Students
-                .Include(x => x.StudyGroup)
-                .FirstOrDefaultAsync(x => x.ParentUserId == user.Id);
-
-            if (student is not null)
-            {
-                return await GetStudentSchedule(student, targetDate);
-            }
-
-            var teacher = await _dbContext.Teachers
-                .FirstOrDefaultAsync(x => x.ParentUserId == user.Id);
-
-            if (teacher is not null)
-            {
-                return await GetTeacherSchedule(teacher, targetDate);
-            }
-
-            return [];
         }
 
         private async Task<IReadOnlyCollection<ScheduleLessonsResult>> GetStudentSchedule(Student student, DateOnly targetDate)

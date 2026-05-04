@@ -1,6 +1,6 @@
 ﻿namespace Backend.Api.Contracts.Shedule
 {
-    public sealed record TodayScheduleresponse(
+    public sealed record TodayStudentScheduleresponse(
         string Date,
         string DayName,
         int WeekNumber,

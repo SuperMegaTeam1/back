@@ -1,6 +1,6 @@
 ﻿namespace Backend.Api.Contracts.Shedule;
 
-public class StudentScheduleResponse
+public class StudentScheduleLessonsResponse
 {
     
 }

@@ -23,7 +23,7 @@ namespace Backend.Application.Services
 
             var (monday, saturday) = StartEndDay(actualDate);
 
-            var items = await _scheduleRepository.GetWeekScheduleAsync(userId, monday, saturday);
+            var items = await _scheduleRepository.GetScheduleAsync(userId, monday, saturday);
             
             if (items == null)
             {
@@ -50,7 +50,7 @@ namespace Backend.Application.Services
         {
             var actualDate = date ?? DateOnly.FromDateTime(DateTime.UtcNow);
 
-            var items = await _scheduleRepository.GetTodayScheduleAsync(userId, actualDate);
+            var items = await _scheduleRepository.GetScheduleAsync(userId, actualDate, actualDate);
 
             if (items == null)
             {

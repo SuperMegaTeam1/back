@@ -9,5 +9,5 @@ namespace Backend.Application.Models.Shedule
     public sealed record WeekScheduleResult(
         string DateStart,
         string DateEnd,
-        IReadOnlyCollection<TodayScheduleResult> Items);
+        IReadOnlyCollection<ScheduleLessonsResult> Items);
 }
