@@ -11,6 +11,10 @@ namespace Backend.Application.Interfaces
     {
         Task<List<StudentGrade>> GetByGroupAsync(Guid groupId);
         Task<List<StudentGrade>> GetByGroupAndSubjectAsync(Guid groupId, Guid subjectId);
+        Task<StudentGrade?> GetByIdAsync(Guid gradeId);
+        Task<StudentGrade?> GetByStudentLesson(Guid studentId, Guid lessonId);
+        Task AddAsync(StudentGrade studentGrade);
+        Task SaveChangesAsync();
     }
 }
 
