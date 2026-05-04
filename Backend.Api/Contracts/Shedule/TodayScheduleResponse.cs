@@ -1,10 +1,9 @@
 ﻿namespace Backend.Api.Contracts.Shedule
 {
-    public sealed record TodayStudentScheduleresponse(
+    public sealed record TodayScheduleResponse<T>(
         string Date,
         string DayName,
         int WeekNumber,
         int LessonsCount,
-        IReadOnlyCollection<ScheduleLessonsResponse> Items);
-
+        IReadOnlyCollection<T> Items);
 }

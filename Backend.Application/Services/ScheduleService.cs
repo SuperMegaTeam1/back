@@ -20,27 +20,21 @@ namespace Backend.Application.Services
         public async Task<WeekScheduleResult> GetWeekScheduleAsync(Guid userId, DateOnly? date)
         {
             var actualDate = date ?? DateOnly.FromDateTime(DateTime.UtcNow);
-
             var (monday, saturday) = StartEndDay(actualDate);
 
-            var items = await _scheduleRepository.GetScheduleAsync(userId, monday, saturday);
-            
-            if (items == null)
-            {
-                return null;
-            }
+            var days = await _scheduleRepository.GetScheduleAsync(userId, monday, saturday);
 
             return new WeekScheduleResult(
-                DateStart: monday.ToString(),
-                DateEnd: saturday.ToString(),
-                Items: items
+                DateStart: monday.ToString("yyyy-MM-dd"),
+                DateEnd: saturday.ToString("yyyy-MM-dd"),
+                Items: days
             );
         }
 
         private (DateOnly monday, DateOnly saturday) StartEndDay(DateOnly date)
         {
-            var dayOfWeek = (int)date.DayOfWeek;
-            var monday = date.AddDays(-dayOfWeek + 1);
+            int diff = (7 + (date.DayOfWeek - DayOfWeek.Monday)) % 7;
+            var monday = date.AddDays(-1 * diff);
             var saturday = monday.AddDays(5);
 
             return (monday, saturday);
@@ -50,20 +44,15 @@ namespace Backend.Application.Services
         {
             var actualDate = date ?? DateOnly.FromDateTime(DateTime.UtcNow);
 
-            var items = await _scheduleRepository.GetScheduleAsync(userId, actualDate, actualDate);
+            var results = await _scheduleRepository.GetScheduleAsync(userId, actualDate, actualDate);
 
-            if (items == null)
-            {
-                return null;
-            }
-
-            return new TodayScheduleResult(
+            return results.FirstOrDefault() ?? new TodayScheduleResult(
                 Date: actualDate.ToString("yyyy-MM-dd"),
-                DayName: actualDate.DayOfWeek.ToString(),
-                WeekNumber: GetIsoWeek(actualDate),
-                LessonsWeek: items.Count,
-                Items: items
-                );
+                DayName: actualDate.ToString("dddd"),
+                WeekNumber: null,
+                LessonsWeek: 0,
+                Items: []
+            );
         }
 
         private static int GetIsoWeek(DateOnly date)

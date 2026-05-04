@@ -10,6 +10,6 @@ namespace Backend.Application.Interfaces
     public interface IScheduleRepository
     {
         // todo объяед в один мето
-        Task<IReadOnlyCollection<ScheduleLessonsResult>> GetScheduleAsync(Guid userId, DateOnly from, DateOnly to);
+        Task<IReadOnlyCollection<TodayScheduleResult>> GetScheduleAsync(Guid userId, DateOnly from, DateOnly to);
     }
 }
