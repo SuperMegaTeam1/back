@@ -11,6 +11,7 @@ namespace Backend.Application.Interfaces
     public interface IStudentRepository
     {
         Task<Student?> GetByUserIdAsync(Guid userId);
+        Task<Student?> GetByIdAsync(Guid studentId);
         Task<List<Student>> GetByGroupIdAsync(Guid groupId);
     }
 }

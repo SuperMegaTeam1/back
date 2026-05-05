@@ -35,5 +35,27 @@ namespace Backend.Infrastructure.Repositories
                 .Include(g => g.Student)
                 .ToListAsync();
         }
+
+        public async Task<StudentGrade?> GetByIdAsync(Guid gradeId)
+        {
+            return await _db.StudentGrades
+                .FirstOrDefaultAsync(x => x.Id == gradeId);
+        }
+
+        public async Task<StudentGrade?> GetByStudentLesson(Guid studentId, Guid lessonId)
+        {
+            return await _db.StudentGrades
+                .FirstOrDefaultAsync(x => x.StudentId == studentId && x.LessonId == lessonId);
+        }
+
+        public async Task AddAsync(StudentGrade grade)
+        {
+            await _db.StudentGrades.AddAsync(grade);
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _db.SaveChangesAsync();
+        }
     }
 }
