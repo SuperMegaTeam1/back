@@ -27,113 +27,78 @@ namespace Backend.Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<IReadOnlyCollection<TodayScheduleResult>> GetWeekScheduleAsync(Guid userId, DateOnly monday, DateOnly saturday)
+        public async Task<IReadOnlyCollection<TodayScheduleResult>> GetScheduleAsync(
+            Guid userId, 
+            DateOnly from, 
+            DateOnly to)
         {
-            var schedule = new List<TodayScheduleResult>();
-
-            for (var day = monday; day <= saturday; day = day.AddDays(1))
-            {
-                // todo
-                var ScheduleDay = await GetTodayScheduleAsync(userId, day);
-
-                schedule.Add(
-                    new TodayScheduleResult(
-                        Date: day.ToString("yyyy-MM-dd"),
-                        DayName : day.ToString("dddd"),
-                        WeekNumber: null,
-                        LessonsWeek: null,
-                        Items : ScheduleDay
-                    )
-                );
-            }
-
-            return schedule;
-        }
-
-        public async Task<IReadOnlyCollection<ScheduleLessonsResult>> GetTodayScheduleAsync(Guid userId, DateOnly? date)
-        {
-            var targetDate = date ?? DateOnly.FromDateTime(DateTime.UtcNow);
-
-            // todo userId
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            // todo валидация в сервисе
-            if (user is null)
-                return [];
+            var fromUtc = DateTime.SpecifyKind(from.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc);
+            var toUtc = DateTime.SpecifyKind(to.AddDays(1).ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc);
 
             var student = await _dbContext.Students
-                .Include(x => x.StudyGroup)
-                .FirstOrDefaultAsync(x => x.ParentUserId == user.Id);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.ParentUserId == userId);
 
-            if (student is not null)
-            {
-                return await GetStudentSchedule(student, targetDate);
-            }
+            var teacher = student == null 
+                ? await _dbContext.Teachers.AsNoTracking().FirstOrDefaultAsync(x => x.ParentUserId == userId)
+                : null;
 
-            var teacher = await _dbContext.Teachers
-                .FirstOrDefaultAsync(x => x.ParentUserId == user.Id);
+            if (student == null && teacher == null) return [];
 
-            if (teacher is not null)
-            {
-                return await GetTeacherSchedule(teacher, targetDate);
-            }
-
-            return [];
-        }
-
-        private async Task<IReadOnlyCollection<ScheduleLessonsResult>> GetStudentSchedule(Student student, DateOnly targetDate)
-        {
-            var lessons = await _dbContext.Lessons
+            var query = _dbContext.Lessons
+                .AsNoTracking()
                 .Include(x => x.Subject)
                 .Include(x => x.Teacher)
                 .Include(x => x.StudyGroup)
-                .Where(x => x.StudyGroupId == student.StudyGroupId)
-                .Where(x => DateOnly.FromDateTime(x.StartsAt) == targetDate)
-                .OrderBy(x => x.StartsAt)
-                .ToListAsync();
+                .Where(x => x.StartsAt >= fromUtc && x.StartsAt < toUtc);
 
-            // todo type, cabinet
-            return lessons.Select(lesson => new ScheduleLessonsResult(
+            if (student != null)
+                query = query.Where(x => x.StudyGroupId == student.StudyGroupId);
+            else
+                query = query.Where(x => x.TeacherId == teacher.Id);
+
+            var allLessons = await query.OrderBy(x => x.StartsAt).ToListAsync();
+
+            var results = new List<TodayScheduleResult>();
+
+            for (var day = from; day <= to; day = day.AddDays(1))
+            {
+                var dateStr = day.ToString("yyyy-MM-dd");
+                
+                var lessonsForDay = allLessons
+                    .Where(l => DateOnly.FromDateTime(l.StartsAt) == day)
+                    .Select(MapToResult)
+                    .ToList();
+
+                results.Add(new TodayScheduleResult(
+                    Date: dateStr,
+                    DayName: day.ToString("dddd"),
+                    WeekNumber: System.Globalization.ISOWeek.GetWeekOfYear(day.ToDateTime(TimeOnly.MinValue)),
+                    LessonsWeek: lessonsForDay.Count,
+                    Items: lessonsForDay
+                ));
+            }
+
+            return results;
+        }
+
+        private static ScheduleLessonsResult MapToResult(Lesson lesson)
+        {
+            return new ScheduleLessonsResult(
                 LessonsId: lesson.Id,
                 SubjectId: lesson.SubjectId,
                 SubjectName: lesson.Subject.Name,
                 TeacherId: lesson.TeacherId,
-                TeacherFirstName: lesson.Teacher.FirstName,
-                TeacherLastName: lesson.Teacher.LastName,
-                TeacherFatherName: lesson.Teacher.FatherName,
+                TeacherFirstName: lesson.Teacher?.FirstName,
+                TeacherLastName: lesson.Teacher?.LastName,
+                TeacherFatherName: lesson.Teacher?.FatherName,
                 GroupId: lesson.StudyGroupId,
-                GroupName: lesson.StudyGroup.Name,
-                Cabinet: null,
+                GroupName: lesson.StudyGroup?.Name,
+                Cabinet: null, 
                 Type: null,
                 StartsAt: lesson.StartsAt.ToString("HH:mm"),
                 EndsAt: lesson.EndsAt.ToString("HH:mm")
-            )).ToList();
-        }
-
-        private async Task<IReadOnlyCollection<ScheduleLessonsResult>> GetTeacherSchedule(Teacher teacher, DateOnly targetDate)
-        {
-            var lessons = await _dbContext.Lessons
-                .Include(x => x.Subject)
-                .Include(x => x.StudyGroup)
-                .Where(x => x.TeacherId == teacher.Id)
-                .Where(x => DateOnly.FromDateTime(x.StartsAt) == targetDate)
-                .OrderBy(x => x.StartsAt)
-                .ToListAsync();
-
-            return lessons.Select(lesson => new ScheduleLessonsResult(
-                LessonsId: lesson.Id,
-                SubjectId: lesson.SubjectId,
-                SubjectName: lesson.Subject.Name,
-                TeacherId: teacher.Id,
-                TeacherFirstName: teacher.FirstName,
-                TeacherLastName: teacher.LastName,
-                TeacherFatherName: teacher.FatherName,
-                GroupId: lesson.StudyGroupId,
-                GroupName: lesson.StudyGroup.Name,
-                Cabinet: null,
-                Type: null,
-                StartsAt: lesson.StartsAt.ToString("HH:mm"),
-                EndsAt: lesson.EndsAt.ToString("HH:mm")
-            )).ToList();
+            );
         }
     }
 }

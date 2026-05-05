@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Backend.Application.Interfaces
 {
-    public interface IScheduleService
+    public interface IScheduleRepository
     {
-        Task<TodayScheduleResult> GetTodayScheduleAsync(Guid userId, DateOnly? date);
-        Task<WeekScheduleResult> GetWeekScheduleAsync(Guid userId, DateOnly? date);
+        // todo объяед в один мето
+        Task<IReadOnlyCollection<TodayScheduleResult>> GetScheduleAsync(Guid userId, DateOnly from, DateOnly to);
     }
 }
