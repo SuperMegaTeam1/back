@@ -77,7 +77,7 @@ namespace Backend.Infrastructure.Repository
                 groupName = group?.Name;
             }
 
-            var teacher = await _dbContext.Teachers.FirstOrDefaultAsync(y => y.Id == user.Id);
+            var teacher = await _dbContext.Teachers.FirstOrDefaultAsync(y => y.ParentUserId == user.Id);
 
             if (teacher is not null)
             {
