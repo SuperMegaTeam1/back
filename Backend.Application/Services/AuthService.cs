@@ -46,6 +46,7 @@ namespace Backend.Application.Services
 
             if (user is null)
             {
+                Console.WriteLine("Я тут упал1");
                 return null;
             }
 
