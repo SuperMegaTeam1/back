@@ -1,6 +1,7 @@
 ﻿using Backend.Application.Interfaces;
 using Backend.Application.Models;
 using Backend.Domain.Entities;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Backend.Application.Services;
 
@@ -9,15 +10,23 @@ public class NotificationService : INotificationService
     private readonly INotificationRepository _notificationRepository;
     private readonly IStudentRepository _studentRepository;
     private readonly IGroupRepository _groupRepository;
+    private readonly INotificationSender _notificationSender;
     
     public NotificationService(
         INotificationRepository notificationRepository,
         IStudentRepository studentRepository,
-        IGroupRepository groupRepository)
+        IGroupRepository groupRepository,
+        INotificationSender notificationSender)
     {
         _notificationRepository = notificationRepository;
         _groupRepository = groupRepository;
         _studentRepository = studentRepository;
+        _notificationSender = notificationSender;
+    }
+
+    public async Task SendNotificationAsync(Notification notification)
+    {
+        await _notificationSender.SendNotificationAsync(notification);
     }
 
     public async Task<IReadOnlyCollection<NotificationResult>> GetNotificationsAsync(Guid userId)
@@ -67,6 +76,11 @@ public class NotificationService : INotificationService
             .ToList();
         
         await _notificationRepository.CreateNotificationsAsync(notification);
+
+        foreach (var item in notification)
+        {
+            await _notificationSender.SendNotificationAsync(item);
+        }
         
         return new TeacherMessageResponse(
             group.Name,

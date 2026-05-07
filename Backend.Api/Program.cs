@@ -79,6 +79,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -108,6 +109,7 @@ app.MapHealthChecks("/health");
 app.MapGet("/", () => Results.Ok(new { service = "backend", status = "ok" }));
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapHub<NotificationHub>("/notification");
 app.MapControllers();
 app.Run();
 

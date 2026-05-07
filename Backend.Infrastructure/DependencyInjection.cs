@@ -31,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<ILessonRepository, LessonRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IGroupRepository, GroupRepository>();
+        services.AddScoped<INotificationSender, NotificationSender>();
 
         return services;
     }
