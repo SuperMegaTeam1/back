@@ -23,6 +23,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<LessonParticipation> LessonParticipations { get; set; }
     public DbSet<StudentGrade> StudentGrades { get; set; }
     public DbSet<StudentRating> StudentRatings { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

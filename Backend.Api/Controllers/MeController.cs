@@ -65,6 +65,7 @@ namespace Backend.Api.Controllers
 
             if (teacher is null || teacher.TeacherId is null)
             {
+                Console.WriteLine("A{SD{AS{DPAS{DPASOP{DSAOOPDIASOIJDJKASJDKLASKDOASLKFJUEHIUQHUIHWQUIUHEUQWHJEUQWHJEKJQWHEKJHQWKJEHQWKJEH");
                 return Unauthorized();
             }
 
