@@ -27,5 +27,16 @@ namespace Backend.Api.Controllers
             var result = await _journalService.UpdateJournal(lessonId, request);
             return Ok(result);
         }
+
+        [Authorize(Roles = "Teacher")]
+        [HttpGet("journal/{subjectId}/{groupId}")]
+        public async Task<IActionResult> GetJournal(Guid subjectId, Guid groupId)
+        {
+            var teacherIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(teacherIdValue, out var teacherId))
+                return Unauthorized();
+            var journal = await _journalService.GetJournalAsync(subjectId, groupId, teacherId);
+            return Ok(journal);
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace Backend.Application.Interfaces
     public interface ILessonRepository
     {
         Task<Lesson?> GetByIdAsync(Guid id);
+        Task<IReadOnlyList<Lesson?>> GetLessonsByTeacherSubjectAndStudyGroup(Guid subjectId, Guid studyGroupId, Guid teacherUserId);
         Task SaveChangesAsync();
     }
 }
