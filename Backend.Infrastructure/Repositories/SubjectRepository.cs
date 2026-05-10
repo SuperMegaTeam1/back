@@ -35,5 +35,19 @@ namespace Backend.Infrastructure.Repositories
                 .Distinct()
                 .ToListAsync();
         }
+
+        public async Task<IReadOnlyList<SubjectEntity>> GetSubjectsByTeacherIdAsync(Guid userId)
+        {
+            var teacherId = await _db.Teachers
+                .Where(t => t.ParentUserId == userId)
+                .Select(t => t.Id)
+                .FirstOrDefaultAsync();
+
+            return await _db.Lessons
+                .Where(l => l.TeacherId == teacherId)
+                .Select(l => l.Subject)
+                .Distinct()
+                .ToListAsync();
+        }
     }
 }

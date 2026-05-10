@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Application.Models.StudentsSubjects
 {
-    public class StudentsSubjectsResponse
+    public class SubjectsResponse
     {
         public Guid SubjectId { get; set; }
         public string SubjectName { get; set; } = null!;

@@ -21,13 +21,26 @@ namespace Backend.Application.Services
             _subjectRepo = subjectRepository;
         }
 
-        public async Task<IReadOnlyList<StudentsSubjectsResponse>> GetSubjectsForStudentAsync(Guid userId)
+        public async Task<IReadOnlyList<SubjectsResponse>> GetSubjectsForStudentAsync(Guid userId)
         {
             var student = await _studentRepo.GetByUserIdAsync(userId) ?? throw new Exception("Student not found");
             var studentId = student.Id;
             var groupId = student.StudyGroupId;
             var subjects = await _subjectRepo.GetSubjectsByStudyGroupIdAsync(groupId);
-            return subjects.Select(s => new StudentsSubjectsResponse
+            return subjects.Select(s => new SubjectsResponse
+            {
+                SubjectId = s.Id,
+                SubjectName = s.Name
+            }).ToList();
+        }
+
+        public async Task<IReadOnlyList<SubjectsResponse>> GetSubjectsForStudentBySubjectIdAsync(Guid userId, Guid subjectId)
+        {
+            var student = await _studentRepo.GetByUserIdAsync(userId) ?? throw new Exception("Student not found");
+            var studentId = student.Id;
+            var groupId = student.StudyGroupId;
+            var subjects = await _subjectRepo.GetSubjectsByStudyGroupIdAsync(groupId);
+            return subjects.Where(s => s.Id == subjectId).Select(s => new SubjectsResponse
             {
                 SubjectId = s.Id,
                 SubjectName = s.Name

@@ -10,20 +10,22 @@ using System.Security.Claims;
 namespace Backend.Api.Controllers
 {
     [Route("api")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Student")]
     [ApiController]
     public class MeSubjectsController : ControllerBase
     {
         private readonly IStudentsSubjectsService _studentsSubjectsService;
+        private readonly ITeachersSubjectsService _teachersSubjectsService;
 
-        public MeSubjectsController(IStudentsSubjectsService studentsSubjects)
+        public MeSubjectsController(IStudentsSubjectsService studentsSubjects, ITeachersSubjectsService teachersSubjectsService)
         {
             _studentsSubjectsService = studentsSubjects;
+            _teachersSubjectsService = teachersSubjectsService;
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Student")]
         [HttpGet("students/me/subjects")]
         [Authorize]
-        public async Task<IActionResult> GetMySubjects()
+        public async Task<IActionResult> GetStudentsSubjects()
         {
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -34,6 +36,24 @@ namespace Backend.Api.Controllers
 
             return Ok(new { items = subjects });
         }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Teacher")]
+        [HttpGet("teachers/me/subjects")]
+        [Authorize]
+        public async Task<IActionResult> GetTeachersSubjects()
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!Guid.TryParse(userIdValue, out var userId))
+                return Unauthorized();
+
+            Console.WriteLine(userId);
+
+            var subjects = await _teachersSubjectsService.GetSubjectsForTeacherAsync(userId);
+
+            return Ok(new { items = subjects });
+        }
+
     }
 }
 

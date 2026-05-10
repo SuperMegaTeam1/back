@@ -12,5 +12,7 @@ namespace Backend.Application.Interfaces
         Task<string?> GetNameByIdAsync(Guid subjectId);
 
         Task<IReadOnlyList<SubjectEntity>> GetSubjectsByStudyGroupIdAsync(Guid studyGroupId);
+
+        Task<IReadOnlyList<SubjectEntity>> GetSubjectsByTeacherIdAsync(Guid teacherId);
     }
 }

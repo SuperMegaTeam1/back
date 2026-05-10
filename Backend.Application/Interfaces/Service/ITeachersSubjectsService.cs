@@ -7,8 +7,8 @@ using Backend.Application.Models.StudentsSubjects;
 
 namespace Backend.Application.Interfaces.Service
 {
-    public interface IStudentsSubjectsService
+    public interface ITeachersSubjectsService
     {
-        Task<IReadOnlyList<SubjectsResponse>> GetSubjectsForStudentAsync(Guid userId);
+        Task<IReadOnlyList<SubjectsResponse>> GetSubjectsForTeacherAsync(Guid userId);
     }
 }
