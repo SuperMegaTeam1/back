@@ -1,4 +1,6 @@
 using Backend.Application.Interfaces;
+using Backend.Application.Interfaces.Service;
+using Backend.Application.Services;
 using Backend.Infrastructure.Data;
 using Backend.Infrastructure.Identity;
 using Backend.Infrastructure.Repositories;
@@ -32,6 +34,9 @@ public static class DependencyInjection
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IGroupRepository, GroupRepository>();
         services.AddScoped<INotificationSender, NotificationSender>();
+        services.AddScoped<IStudentRepository, StudentRepository>();
+        services.AddScoped<ISubjectRepository, SubjectRepository>();
+        services.AddScoped<IStudentsSubjectsService, StudentsSubjectsService>();
 
         return services;
     }
