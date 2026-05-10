@@ -1,4 +1,5 @@
 ﻿using Backend.Application.Interfaces;
+using Backend.Domain.Entities;
 using Backend.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -24,6 +25,29 @@ namespace Backend.Infrastructure.Repositories
                 .Where(x => x.Id == id)
                 .Select(x => x.Name)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<IReadOnlyList<SubjectEntity>> GetSubjectsByStudyGroupIdAsync(Guid studyGroupId)
+        {
+            return await _db.Lessons
+                .Where(l => l.StudyGroupId == studyGroupId)
+                .Select(l => l.Subject)
+                .Distinct()
+                .ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<SubjectEntity>> GetSubjectsByTeacherIdAsync(Guid userId)
+        {
+            var teacherId = await _db.Teachers
+                .Where(t => t.ParentUserId == userId)
+                .Select(t => t.Id)
+                .FirstOrDefaultAsync();
+
+            return await _db.Lessons
+                .Where(l => l.TeacherId == teacherId)
+                .Select(l => l.Subject)
+                .Distinct()
+                .ToListAsync();
         }
     }
 }
