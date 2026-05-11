@@ -10,4 +10,5 @@ namespace Backend.Application.Interfaces;
 public interface IRatingService
 {
     Task<StudentRatingResponse> GetMyRatingAsync(Guid userId, Guid? subjectId);
+    Task UpdateRatingsAsync();
 }

@@ -13,15 +13,27 @@ namespace Backend.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<StudentRating> builder)
         {
-            builder.HasKey(x => new { x.StudentId, x.SubjectId });
+            builder.HasKey(x => x.Id);
 
             builder.HasOne(x => x.Student)
                 .WithMany()
-                .HasForeignKey(x => x.StudentId);
+                .HasForeignKey(x => x.StudentId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.Subject)
                 .WithMany()
-                .HasForeignKey(x => x.SubjectId);
+                .HasForeignKey(x => x.SubjectId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(x => x.TotalGrade)
+                .IsRequired();
+
+            builder.Property(x => x.RatingPosition)
+                .IsRequired();
+
+            builder.Property(x => x.GroupId)
+                .IsRequired();
         }
     }
 }
