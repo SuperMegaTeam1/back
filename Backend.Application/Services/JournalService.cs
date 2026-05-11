@@ -116,5 +116,39 @@ namespace Backend.Application.Services
                 Items = result
             };
         }
+
+        public async Task<GroupJournalResponse> GetJournalAsync(Guid subjectId, Guid groupId, Guid teacherUserId)
+        {
+            var lessons = await _lessonRepo.GetLessonsByTeacherSubjectAndStudyGroup(subjectId, groupId, teacherUserId);
+
+            if (!lessons.Any())
+                throw new Exception("Нет уроков для этого предмета у данного учителя");
+
+            var students = await _studentRepo.GetByGroupIdAsync(groupId);
+
+            var items = lessons
+               .SelectMany(lesson => students, (lesson, student) =>
+               {
+                   var grade = lesson.Grades.FirstOrDefault(g => g.StudentId == student.Id);
+                   var participation = lesson.Participations.FirstOrDefault(p => p.StudentId == student.Id);
+
+                   return new GroupJournalDto
+                   {
+                       LessonId = lesson.Id,
+                       Date = lesson.StartsAt.Date,
+                       StudentId = student.Id,
+                       Grade = grade?.Grade,
+                       Attended = participation?.Attended
+                   };
+               })
+               .ToList();
+
+            return new GroupJournalResponse
+            {
+                SubjectId = subjectId,
+                GroupId = groupId,
+                Items = items
+            };
+        }
     }
 }
