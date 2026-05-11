@@ -119,12 +119,17 @@ app.MapGet("/", () => Results.Ok(new { service = "backend", status = "ok" }));
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHub<NotificationHub>("/notification");
-app.UseHangfireDashboard();
+
 app.MapControllers();
-RecurringJob.AddOrUpdate<IRatingService>(
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    app.UseHangfireDashboard();
+    RecurringJob.AddOrUpdate<IRatingService>(
     "update-student-ratings",
     service => service.UpdateRatingsAsync(),
     "0 2 * * *"); // каждый день в 02:00
+}
+
 app.Run();
 
 public partial class Program;
