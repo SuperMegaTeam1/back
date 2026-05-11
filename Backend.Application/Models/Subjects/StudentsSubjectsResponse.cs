@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Backend.Application.Models.StudentsSubjects
+namespace Backend.Application.Models.Subjects
 {
-    public class SubjectsResponse
+    public class StudentsSubjectsResponse
     {
         public Guid SubjectId { get; set; }
         public string SubjectName { get; set; } = null!;
