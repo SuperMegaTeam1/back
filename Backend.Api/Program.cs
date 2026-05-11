@@ -88,9 +88,14 @@ builder.Services.AddHangfire(config =>
         options.UseNpgsqlConnection(
             builder.Configuration.GetConnectionString("DefaultConnection"))));
 
-builder.Services.AddHangfireServer();
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddHangfireServer();
+}
 
 var app = builder.Build();
+
+
 
 app.UseExcepsionHandler();
 
