@@ -1,4 +1,5 @@
 ﻿using Backend.Application.Interfaces;
+using Backend.Application.Models.Subjects;
 using Backend.Domain.Entities;
 using Backend.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +37,7 @@ namespace Backend.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IReadOnlyList<SubjectEntity>> GetSubjectsByTeacherIdAsync(Guid userId)
+        public async Task<List<(Guid SubjectId, string SubjectName, Guid GroupId, string GroupName)>> GetSubjectsByTeacherIdAsync(Guid userId)
         {
             var teacherId = await _db.Teachers
                 .Where(t => t.ParentUserId == userId)
@@ -45,8 +46,12 @@ namespace Backend.Infrastructure.Repositories
 
             return await _db.Lessons
                 .Where(l => l.TeacherId == teacherId)
-                .Select(l => l.Subject)
-                .Distinct()
+                .Select(l => new ValueTuple<Guid, string, Guid, string>(
+                    l.SubjectId,
+                    l.Subject.Name,
+                    l.StudyGroupId,
+                    l.StudyGroup.Name
+                ))
                 .ToListAsync();
         }
     }

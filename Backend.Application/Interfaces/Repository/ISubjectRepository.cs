@@ -1,4 +1,5 @@
-﻿using Backend.Domain.Entities;
+﻿using Backend.Application.Models.Subjects;
+using Backend.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,6 @@ namespace Backend.Application.Interfaces
 
         Task<IReadOnlyList<SubjectEntity>> GetSubjectsByStudyGroupIdAsync(Guid studyGroupId);
 
-        Task<IReadOnlyList<SubjectEntity>> GetSubjectsByTeacherIdAsync(Guid teacherId);
+        Task<List<(Guid SubjectId, string SubjectName, Guid GroupId, string GroupName)>> GetSubjectsByTeacherIdAsync(Guid teacherId);
     }
 }

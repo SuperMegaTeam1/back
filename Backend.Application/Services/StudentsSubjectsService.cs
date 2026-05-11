@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Backend.Application.Models.StudentsSubjects;
+using Backend.Application.Models.Subjects;
 
 namespace Backend.Application.Services
 {
@@ -21,26 +21,26 @@ namespace Backend.Application.Services
             _subjectRepo = subjectRepository;
         }
 
-        public async Task<IReadOnlyList<SubjectsResponse>> GetSubjectsForStudentAsync(Guid userId)
+        public async Task<IReadOnlyList<StudentsSubjectsResponse>> GetSubjectsForStudentAsync(Guid userId)
         {
             var student = await _studentRepo.GetByUserIdAsync(userId) ?? throw new Exception("Student not found");
             var studentId = student.Id;
             var groupId = student.StudyGroupId;
             var subjects = await _subjectRepo.GetSubjectsByStudyGroupIdAsync(groupId);
-            return subjects.Select(s => new SubjectsResponse
+            return subjects.Select(s => new StudentsSubjectsResponse
             {
                 SubjectId = s.Id,
                 SubjectName = s.Name
             }).ToList();
         }
 
-        public async Task<IReadOnlyList<SubjectsResponse>> GetSubjectsForStudentBySubjectIdAsync(Guid userId, Guid subjectId)
+        public async Task<IReadOnlyList<StudentsSubjectsResponse>> GetSubjectsForStudentBySubjectIdAsync(Guid userId, Guid subjectId)
         {
             var student = await _studentRepo.GetByUserIdAsync(userId) ?? throw new Exception("Student not found");
             var studentId = student.Id;
             var groupId = student.StudyGroupId;
             var subjects = await _subjectRepo.GetSubjectsByStudyGroupIdAsync(groupId);
-            return subjects.Where(s => s.Id == subjectId).Select(s => new SubjectsResponse
+            return subjects.Where(s => s.Id == subjectId).Select(s => new StudentsSubjectsResponse
             {
                 SubjectId = s.Id,
                 SubjectName = s.Name
