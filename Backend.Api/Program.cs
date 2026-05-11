@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Hangfire;
+using Backend.Application.Interfaces;
+using Hangfire.PostgreSql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,8 +83,19 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 builder.Services.AddSignalR();
+builder.Services.AddHangfire(config =>
+    config.UsePostgreSqlStorage(options =>
+        options.UseNpgsqlConnection(
+            builder.Configuration.GetConnectionString("DefaultConnection"))));
+
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddHangfireServer();
+}
 
 var app = builder.Build();
+
+
 
 app.UseExcepsionHandler();
 
@@ -110,7 +124,17 @@ app.MapGet("/", () => Results.Ok(new { service = "backend", status = "ok" }));
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHub<NotificationHub>("/notification");
+
 app.MapControllers();
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    app.UseHangfireDashboard();
+    RecurringJob.AddOrUpdate<IRatingService>(
+    "update-student-ratings",
+    service => service.UpdateRatingsAsync(),
+    "0 2 * * *"); // каждый день в 02:00
+}
+
 app.Run();
 
 public partial class Program;

@@ -25,6 +25,20 @@ namespace Backend.Infrastructure.Repositories
             return await _db.Lessons.FindAsync(id);
         }
 
+        public async Task<IReadOnlyList<Lesson?>> GetLessonsByStudyGroup(Guid studyGroupId)
+        {
+            return await _db.Lessons
+               .Where(l => l.StudyGroupId == studyGroupId)
+               .ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<Lesson?>> GetLessonsByStudyGroupAndSubject(Guid studyGroupId, Guid subjectId)
+        {
+            return await _db.Lessons
+               .Where(l => l.StudyGroupId == studyGroupId && l.SubjectId == subjectId)
+               .ToListAsync();
+        }
+
         public async Task<IReadOnlyList<Lesson?>> GetLessonsByTeacherSubjectAndStudyGroup(Guid subjectId, Guid studyGroupId, Guid userId)
         {
             var teacherId = await _db.Teachers

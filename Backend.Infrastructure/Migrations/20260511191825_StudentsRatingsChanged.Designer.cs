@@ -3,6 +3,7 @@ using System;
 using Backend.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260511191825_StudentsRatingsChanged")]
+    partial class StudentsRatingsChanged
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -171,8 +174,10 @@ namespace Backend.Infrastructure.Migrations
 
             modelBuilder.Entity("Backend.Domain.Entities.StudentRating", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("SubjectId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -181,14 +186,11 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<Guid>("GroupId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("RatingPosition")
                         .HasColumnType("integer");
-
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("SubjectId")
-                        .HasColumnType("uuid");
 
                     b.Property<double>("TotalGrade")
                         .HasColumnType("double precision");
@@ -196,9 +198,7 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("StudentId");
+                    b.HasKey("StudentId", "SubjectId");
 
                     b.HasIndex("SubjectId");
 
@@ -581,7 +581,8 @@ namespace Backend.Infrastructure.Migrations
                     b.HasOne("Backend.Domain.Entities.SubjectEntity", "Subject")
                         .WithMany()
                         .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Student");
 
