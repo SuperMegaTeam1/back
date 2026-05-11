@@ -32,4 +32,25 @@ public class GroupsController : ControllerBase
         
         return Ok(result);
     }
+
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Teacher")]
+    [HttpGet("{groupdId}/students")]
+    public async Task<IActionResult> GetStudentsFromGroup(Guid groupdId)
+    {
+        var userValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!Guid.TryParse(userValue, out var userId))
+        {
+            return  Unauthorized();
+        }
+
+        var result = await _groupService.GetStudentsByGroupIdAsync(groupdId);
+
+        if (result.Count == 0)
+        {
+            return NotFound();
+        }
+            
+        return Ok(result);
+    }
 }
