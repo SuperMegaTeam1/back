@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Backend.Application.Interfaces;
+using Backend.Application.Models;
 using Backend.Application.Models.Group;
 using Backend.Domain.Entities;
 using Backend.Infrastructure.Data;
@@ -30,6 +31,22 @@ public class GroupRepository : IGroupRepository
             .Select(g => new GroupsTeacherDto(
                 g.Id,
                 g.Name))
+            .ToListAsync();
+    }
+
+    public async Task<List<StudentsDto>> StudentsByGroupIdAsyncDto(Guid groupId)
+    {
+        return await _dbContext.Students
+            .Where(student => groupId == student.StudyGroupId)
+            .Select(student => new StudentsDto(
+                student.Id,
+                student.FirstName,
+                student.LastName,
+                student.FatherName ?? string.Empty,
+                _dbContext.Users
+                    .Where(user => user.Id == student.ParentUserId)
+                    .Select(user => user.Email)
+                    .FirstOrDefault() ?? string.Empty))
             .ToListAsync();
     }
 }
