@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Backend.Application.Models.Journal;
 
 namespace Backend.Infrastructure.Repositories
 {
@@ -56,6 +57,22 @@ namespace Backend.Infrastructure.Repositories
         public async Task SaveChangesAsync()
         {
             await _db.SaveChangesAsync();
+        }
+        
+        public async Task<List<JournalInfoDto>> GetListDateSubjectAndGradeBySubject(Guid studentId, Guid studyGroupId, Guid subjectId)
+        {
+            return await  _db.Lessons
+                .Where(lessons => lessons.StudyGroupId == studyGroupId
+                                  && lessons.SubjectId == subjectId)
+                .Join(
+                    _db.StudentGrades.Where(studentGrade => studentGrade.StudentId == studentId),
+                    lessons => lessons.Id,
+                    studentGrades => studentGrades.LessonId,
+                    (lessons, studentGrades) => new JournalInfoDto(
+                        lessons.StartsAt,
+                        studentGrades.Grade
+                        ))
+                .ToListAsync();
         }
     }
 }

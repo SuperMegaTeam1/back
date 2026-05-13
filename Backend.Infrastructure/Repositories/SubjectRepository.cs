@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Backend.Application.Models.Subject;
 
 namespace Backend.Infrastructure.Repositories
 {
@@ -17,6 +18,17 @@ namespace Backend.Infrastructure.Repositories
         public SubjectRepository(AppDbContext db)
         {
             _db = db;
+        }
+
+        public async Task<SubjectDto?> GetSubjectByIdAsync(Guid subjectId)
+        {
+            return await _db.Subjects
+                .Where(subject => subject.Id == subjectId)
+                .Select(subject => new SubjectDto(
+                    subject.Id,
+                    subject.Name,
+                    subject.TeacherId))
+                .FirstOrDefaultAsync();
         }
 
         public async Task<string?> GetNameByIdAsync(Guid id)
