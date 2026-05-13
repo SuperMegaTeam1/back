@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Backend.Application.Models.Journal;
 
 namespace Backend.Application.Interfaces
 {
@@ -15,5 +16,7 @@ namespace Backend.Application.Interfaces
         Task<IReadOnlyList<Lesson?>> GetLessonsByStudyGroupAndSubject(Guid studyGroupId, Guid subjectId);
         Task<IReadOnlyList<Lesson?>> GetLessonsByTeacherSubjectAndStudyGroup(Guid subjectId, Guid studyGroupId, Guid teacherUserId);
         Task SaveChangesAsync();
+
+        Task<List<JournalInfoDto>> GetListDateSubjectAndGradeBySubject(Guid studentId, Guid studyGroupId, Guid subjectId);
     }
 }

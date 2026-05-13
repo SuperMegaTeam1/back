@@ -15,11 +15,16 @@ namespace Backend.Api.Controllers
     {
         private readonly IStudentsSubjectsService _studentsSubjectsService;
         private readonly ITeachersSubjectsService _teachersSubjectsService;
+        private readonly ISubjectService _subjectService;
 
-        public MeSubjectsController(IStudentsSubjectsService studentsSubjects, ITeachersSubjectsService teachersSubjectsService)
+        public MeSubjectsController(
+            IStudentsSubjectsService studentsSubjects, 
+            ITeachersSubjectsService teachersSubjectsService,
+            ISubjectService subjectService)
         {
             _studentsSubjectsService = studentsSubjects;
             _teachersSubjectsService = teachersSubjectsService;
+            _subjectService = subjectService;
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Student")]
@@ -54,6 +59,26 @@ namespace Backend.Api.Controllers
             return Ok(new { items = subjects });
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Student")]
+        [HttpGet("subjects/{subjectId}")]
+        public async Task<IActionResult> GetSubject(Guid subjectId)
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!Guid.TryParse(userIdValue, out var userId))
+            {
+                return Unauthorized();
+            }
+            
+            var subjectInfo = await _subjectService.GetSubjectInfoAsync(userId, subjectId);
+
+            if (subjectInfo == null)
+            {
+                return NotFound();
+            }
+            
+            return Ok(subjectInfo);
+        }
     }
 }
 

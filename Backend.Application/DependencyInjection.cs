@@ -1,4 +1,5 @@
 using Backend.Application.Interfaces;
+using Backend.Application.Interfaces.Service;
 using Backend.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,6 +15,7 @@ public static class DependencyInjection
         services.AddScoped<IJournalService, JournalService>();
         services.AddScoped<IGradeService, GradeService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<ISubjectService, SubjectService>();
 
         return services;
     }
