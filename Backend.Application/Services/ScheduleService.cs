@@ -51,7 +51,7 @@ namespace Backend.Application.Services
                 DayName: actualDate.ToString("dddd"),
                 WeekNumber: null,
                 LessonsWeek: 0,
-                Items: []
+                Items: Array.Empty<ScheduleLessonsResult>()
             );
         }
 

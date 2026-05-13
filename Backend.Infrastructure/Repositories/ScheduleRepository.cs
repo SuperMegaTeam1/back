@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Backend.Application.Models.Group;
 
 namespace Backend.Infrastructure.Repositories
 {
@@ -43,7 +44,8 @@ namespace Backend.Infrastructure.Repositories
                 ? await _dbContext.Teachers.AsNoTracking().FirstOrDefaultAsync(x => x.ParentUserId == userId)
                 : null;
 
-            if (student == null && teacher == null) return [];
+            if (student == null && teacher == null)
+                return Array.Empty<TodayScheduleResult>();
 
             var query = _dbContext.Lessons
                 .AsNoTracking()
@@ -57,7 +59,9 @@ namespace Backend.Infrastructure.Repositories
             else
                 query = query.Where(x => x.TeacherId == teacher.Id);
 
-            var allLessons = await query.OrderBy(x => x.StartsAt).ToListAsync();
+            var allLessons = await query
+                .OrderBy(x => x.StartsAt)
+                .ToListAsync();
 
             var results = new List<TodayScheduleResult>();
 
@@ -67,7 +71,7 @@ namespace Backend.Infrastructure.Repositories
                 
                 var lessonsForDay = allLessons
                     .Where(l => DateOnly.FromDateTime(l.StartsAt) == day)
-                    .Select(MapToResult)
+                    .Select(l => MapToResult(l, allLessons))
                     .ToList();
 
                 results.Add(new TodayScheduleResult(
@@ -82,20 +86,30 @@ namespace Backend.Infrastructure.Repositories
             return results;
         }
 
-        private static ScheduleLessonsResult MapToResult(Lesson lesson)
+        private ScheduleLessonsResult MapToResult(Lesson lesson, List<Lesson> allLessons)
         {
+            var groups = allLessons
+                .Where(x => x.TeacherId == lesson.TeacherId && x.StartsAt == lesson.StartsAt)
+                .Select(x => x.StudyGroup)
+                .Where(g => g != null)
+                .GroupBy(g => g!.Id)
+                .Select(g => g.First())
+                .Select(g => new StudyGroupDto { Id = g!.Id, Name = g!.Name })
+                .ToList();
+
             return new ScheduleLessonsResult(
                 LessonsId: lesson.Id,
                 SubjectId: lesson.SubjectId,
-                SubjectName: lesson.Subject.Name,
+                SubjectName: lesson.Subject?.Name ?? string.Empty,
                 TeacherId: lesson.TeacherId,
                 TeacherFirstName: lesson.Teacher?.FirstName,
                 TeacherLastName: lesson.Teacher?.LastName,
                 TeacherFatherName: lesson.Teacher?.FatherName,
                 GroupId: lesson.StudyGroupId,
                 GroupName: lesson.StudyGroup?.Name,
-                Cabinet: null, 
+                Cabinet: null,
                 Type: null,
+                StudyGroups: groups,
                 StartsAt: lesson.StartsAt.ToString("HH:mm"),
                 EndsAt: lesson.EndsAt.ToString("HH:mm")
             );
