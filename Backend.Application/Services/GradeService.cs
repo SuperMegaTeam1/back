@@ -59,7 +59,6 @@ namespace Backend.Application.Services
                 studentGrade = null;
             }
 
-
             await _gradeRepo.SaveChangesAsync();
             await _participationRepo.SaveChangesAsync();
 
