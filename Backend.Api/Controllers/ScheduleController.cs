@@ -113,6 +113,7 @@ namespace Backend.Api.Controllers
             SubjectName: item.SubjectName,
             Cabinet: item.Cabinet,
             Type: item.Type,
+            StudyGroups: item.StudyGroups?.Select(g => new StudyGroupResponse(g.Id, g.Name)).ToList(),
             StartsAt: item.StartsAt,
             EndsAt: item.EndsAt
         );

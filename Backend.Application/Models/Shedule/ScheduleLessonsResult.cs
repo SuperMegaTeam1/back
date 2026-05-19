@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Backend.Application.Models.Group;
 
 namespace Backend.Application.Models.Shedule
 {
@@ -18,6 +19,7 @@ namespace Backend.Application.Models.Shedule
         string? GroupName,
         string? Cabinet,
         string? Type,
+        List<StudyGroupDto>? StudyGroups,
         string StartsAt,
         string EndsAt);
 }
