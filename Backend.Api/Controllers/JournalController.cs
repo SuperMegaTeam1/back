@@ -9,8 +9,6 @@ using System.Security.Claims;
 
 namespace Backend.Api.Controllers
 {
-    [Route("api")]
-    [ApiController]
     public class JournalController : ControllerBase
     {
         private readonly IJournalService _journalService;
