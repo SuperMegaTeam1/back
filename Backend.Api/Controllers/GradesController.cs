@@ -18,7 +18,7 @@ namespace Backend.Api.Controllers
         }
 
         [Authorize(Roles = "Teacher")]
-        [HttpPatch("/grades/{gradeId}")]
+        [HttpPatch("grades/{gradeId}")]
         public async Task<IActionResult> UpdateGrade(
             Guid gradeId,
             [FromBody] UpdateGradeRequest request)

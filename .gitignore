@@ -1,6 +1,7 @@
 bin/
 obj/
 
+.claude/
 .vs/
 .vscode/
 .idea/
