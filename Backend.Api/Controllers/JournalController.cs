@@ -9,6 +9,8 @@ using System.Security.Claims;
 
 namespace Backend.Api.Controllers
 {
+    [Route("api")]
+    [ApiController]
     public class JournalController : ControllerBase
     {
         private readonly IJournalService _journalService;
@@ -19,7 +21,7 @@ namespace Backend.Api.Controllers
         }
 
         [Authorize(Roles = "Teacher")]
-        [HttpPut("/lessons/{lessonId}/journal")]
+        [HttpPut("lessons/{lessonId}/journal")]
         public async Task<IActionResult> UpdateJournal(
             Guid lessonId,
             [FromBody] UpdateJournalRequest request)
