@@ -6,9 +6,14 @@ using System.Threading.Tasks;
 
 namespace Backend.Application.Models.Journal
 {
-    public class UpdateGradeRequest
+    public class UpdateLessonMarkResult
     {
-        public bool? Attended { get; set; }
+        public Guid StudentId { get; set; }
+
+        public Guid LessonId { get; set; }
+
         public int? Grade { get; set; }
+
+        public bool? Attended { get; set; }
     }
 }

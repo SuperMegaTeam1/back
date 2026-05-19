@@ -1,4 +1,5 @@
 ﻿using Backend.Application.Interfaces;
+using Backend.Application.Models.Journal;
 using Backend.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -11,21 +12,64 @@ namespace Backend.Application.Services
     public class GradeService : IGradeService
     {
         private readonly IGradeRepository _gradeRepo;
-        public GradeService(IGradeRepository gradeRepo)
+        private readonly IParticipationRepository _participationRepo;
+        public GradeService(IGradeRepository gradeRepo, IParticipationRepository participationRepo)
         {
             _gradeRepo = gradeRepo;
+            _participationRepo = participationRepo;
         }
 
-        public async Task<StudentGrade> UpdateGrade(Guid gradeId, int grade)
+        public async Task<UpdateLessonMarkResult> UpdateGrade(
+             Guid gradeId,
+             int? grade,
+             bool? attended)
         {
             var studentGrade = await _gradeRepo.GetByIdAsync(gradeId);
+
             if (studentGrade == null)
-            {
                 throw new Exception("Оценка не найдена");
+
+            var participation = await _participationRepo.Get(
+                studentGrade.StudentId,
+                studentGrade.LessonId);
+
+            if (participation == null)
+            {
+                participation = new LessonParticipation
+                {
+                    StudentId = studentGrade.StudentId,
+                    LessonId = studentGrade.LessonId
+                };
+
+                await _participationRepo.AddAsync(participation);
             }
-            studentGrade.Grade = grade;
+            else
+            {
+                participation.Attended = attended.Value;
+            }
+
+            if (grade != null)
+            {
+                studentGrade.Grade = grade.Value;
+                participation.Attended = true;
+            }
+            else if (grade==null && studentGrade != null)
+            {
+                await _gradeRepo.DeleteAsync(studentGrade);
+                studentGrade = null;
+            }
+
+
             await _gradeRepo.SaveChangesAsync();
-            return studentGrade;
+            await _participationRepo.SaveChangesAsync();
+
+            return new UpdateLessonMarkResult
+            {
+                StudentId = studentGrade?.StudentId ?? participation!.StudentId,
+                LessonId = studentGrade?.LessonId ?? participation!.LessonId,
+                Grade = studentGrade?.Grade ?? null,
+                Attended = participation?.Attended
+            };
         }
     }
 }
