@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Api.Controllers
 {
+    [Route("api")]
+    [ApiController]
     public class GradesController : ControllerBase
     {
         public readonly IGradeService _gradeService;
@@ -16,7 +18,7 @@ namespace Backend.Api.Controllers
         }
 
         [Authorize(Roles = "Teacher")]
-        [HttpPatch("/grades/{gradeId}")]
+        [HttpPatch("grades/{gradeId}")]
         public async Task<IActionResult> UpdateGrade(
             Guid gradeId,
             [FromBody] UpdateGradeRequest request)
