@@ -14,7 +14,7 @@ namespace Backend.Application.Interfaces
         Task<StudentGrade?> GetByIdAsync(Guid gradeId);
         Task<StudentGrade?> GetByStudentLesson(Guid studentId, Guid lessonId);
         Task AddAsync(StudentGrade studentGrade);
+        Task DeleteAsync(StudentGrade srudentGrade);
         Task SaveChangesAsync();
     }
 }
-
