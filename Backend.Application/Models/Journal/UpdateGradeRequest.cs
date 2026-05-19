@@ -8,6 +8,7 @@ namespace Backend.Application.Models.Journal
 {
     public class UpdateGradeRequest
     {
-        public int Grade { get; set; }
+        public bool? Attended { get; set; }
+        public int? Grade { get; set; }
     }
 }

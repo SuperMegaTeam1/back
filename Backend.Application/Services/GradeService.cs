@@ -20,9 +20,9 @@ namespace Backend.Application.Services
         }
 
         public async Task<UpdateLessonMarkResult> UpdateGrade(
-             Guid gradeId,
-             int? grade,
-             bool? attended)
+       Guid gradeId,
+       int? grade,
+       bool? attended)
         {
             var studentGrade = await _gradeRepo.GetByIdAsync(gradeId);
 
@@ -43,17 +43,19 @@ namespace Backend.Application.Services
 
                 await _participationRepo.AddAsync(participation);
             }
-            else
+
+            // Присваиваем только если есть значение
+            if (attended.HasValue)
             {
                 participation.Attended = attended.Value;
             }
 
-            if (grade != null)
+            if (grade.HasValue)
             {
                 studentGrade.Grade = grade.Value;
-                participation.Attended = true;
+                participation.Attended = true; // логично помечать посещение, если ставим оценку
             }
-            else if (grade == null && studentGrade != null)
+            else if (!grade.HasValue && studentGrade != null)
             {
                 await _gradeRepo.DeleteAsync(studentGrade);
                 studentGrade = null;
@@ -64,10 +66,10 @@ namespace Backend.Application.Services
 
             return new UpdateLessonMarkResult
             {
-                StudentId = studentGrade?.StudentId ?? participation!.StudentId,
-                LessonId = studentGrade?.LessonId ?? participation!.LessonId,
-                Grade = studentGrade?.Grade ?? null,
-                Attended = participation?.Attended
+                StudentId = studentGrade?.StudentId ?? participation.StudentId,
+                LessonId = studentGrade?.LessonId ?? participation.LessonId,
+                Grade = studentGrade?.Grade,
+                Attended = participation.Attended
             };
         }
     }
