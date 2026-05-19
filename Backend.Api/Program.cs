@@ -53,6 +53,20 @@ builder.Services.AddAuthentication(options =>
             ValidAudience = jwtSettings["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(key)
         };
+        
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/notification"))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddSwaggerGen(options =>
@@ -83,6 +97,16 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 builder.Services.AddSignalR();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 builder.Services.AddHangfire(config =>
     config.UsePostgreSqlStorage(options =>
         options.UseNpgsqlConnection(
@@ -121,6 +145,7 @@ if (app.Environment.IsDevelopment() && !skipSeeding)
 
 app.MapHealthChecks("/health");
 app.MapGet("/", () => Results.Ok(new { service = "backend", status = "ok" }));
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHub<NotificationHub>("/notification");
@@ -135,6 +160,6 @@ if (!app.Environment.IsEnvironment("Testing"))
     "0 2 * * *"); // каждый день в 02:00
 }
 
-app.Run();
+app.Run();  
 
 public partial class Program;
