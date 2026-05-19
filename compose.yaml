@@ -1,0 +1,37 @@
+﻿services:
+  backend.api:
+    image: backend.api
+    build:
+      context: .
+      dockerfile: Backend.Api/Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=moi-ivmiit-db;Username=postgres;Password=Rostislav_2004
+
+      Jwt__Key: super_secret_jwt_key_123456789123456
+      Jwt__Issuer: backend
+      Jwt__Audience: frontend
+      
+    ports:
+      - "8080:8080"
+
+  postgres:
+    image: postgres:16
+    restart: always
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Rostislav_2004
+      POSTGRES_DB: moi-ivmiit-db
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

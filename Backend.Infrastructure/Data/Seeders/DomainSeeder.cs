@@ -100,17 +100,17 @@ namespace Backend.Infrastructure.Data.Seeders
                 await db.SaveChangesAsync();
             }
 
-            var groupA = await db.StudyGroups.FirstOrDefaultAsync(g => g.Name == "Group A");
+            var groupA = await db.StudyGroups.FirstOrDefaultAsync(g => g.Name == "09-351");
             if (groupA == null)
             {
-                groupA = new StudyGroup { Id = Guid.NewGuid(), Name = "Group A" };
+                groupA = new StudyGroup { Id = Guid.NewGuid(), Name = "09-351" };
                 db.StudyGroups.Add(groupA);
             }
 
-            var groupB = await db.StudyGroups.FirstOrDefaultAsync(g => g.Name == "Group B");
+            var groupB = await db.StudyGroups.FirstOrDefaultAsync(g => g.Name == "09-352");
             if (groupB == null)
             {
-                groupB = new StudyGroup { Id = Guid.NewGuid(), Name = "Group B" };
+                groupB = new StudyGroup { Id = Guid.NewGuid(), Name = "09-352" };
                 db.StudyGroups.Add(groupB);
             }
 
