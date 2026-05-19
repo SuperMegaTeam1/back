@@ -130,7 +130,7 @@ namespace Backend.Tests.Unit.Services
                 {
                     new(Guid.NewGuid(), Guid.NewGuid(), "Math", Guid.NewGuid(),
                         "John", "Doe", null, Guid.NewGuid(), "Group A",
-                        "101", "Lecture", "09:00", "10:30")
+                        "101", "Lecture", null, "09:00", "10:30")
                 })
             };
 
