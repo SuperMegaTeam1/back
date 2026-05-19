@@ -172,13 +172,13 @@ namespace Backend.Tests.Unit.Services
             {
                 new(Guid.NewGuid(), Guid.NewGuid(), "Math", Guid.NewGuid(),
                     "John", "Doe", null, Guid.NewGuid(), "Group A",
-                    "101", "Lecture", "09:00", "10:30"),
+                    "101", "Lecture", null, "09:00", "10:30"),
                 new(Guid.NewGuid(), Guid.NewGuid(), "Physics", Guid.NewGuid(),
                     "Jane", "Smith", null, Guid.NewGuid(), "Group A",
-                    "202", "Lab", "10:45", "12:15"),
+                    "202", "Lab", null, "10:45", "12:15"),
                 new(Guid.NewGuid(), Guid.NewGuid(), "History", Guid.NewGuid(),
                     "Bob", "Johnson", null, Guid.NewGuid(), "Group B",
-                    "305", "Seminar", "13:00", "14:30")
+                    "305", "Seminar", null, "13:00", "14:30")
             };
 
             var repositoryResult = new List<TodayScheduleResult>
