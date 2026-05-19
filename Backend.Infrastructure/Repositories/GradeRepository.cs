@@ -53,6 +53,10 @@ namespace Backend.Infrastructure.Repositories
             await _db.StudentGrades.AddAsync(grade);
         }
 
+        public async Task DeleteAsync(StudentGrade studentGrade)
+        {
+            await _db.StudentGrades.Where(s=>s.Id==studentGrade.Id).ExecuteDeleteAsync();
+        }
         public async Task SaveChangesAsync()
         {
             await _db.SaveChangesAsync();
