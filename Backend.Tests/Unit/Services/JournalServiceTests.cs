@@ -30,20 +30,28 @@ namespace Backend.Tests.Unit.Services
         public async Task UpdateJournal_ShouldReturnUpdatedJournal()
         {
             var lessonId = Guid.NewGuid();
+            var studentId = Guid.NewGuid(); 
+
+            _studentRepo.Setup(x => x.GetByIdAsync(studentId))
+                .ReturnsAsync(new Student { Id = studentId, StudyGroupId = Guid.NewGuid() });
+
             var request = new UpdateJournalRequest
             {
                 Items = new List<JournalItemDto>
-                {
-                    new JournalItemDto
-                    {
-                        StudentId = Guid.NewGuid(),
-                        Grade = 5,
-                        Attended = null
-                    }
-                }
+        {
+            new JournalItemDto
+            {
+                StudentId = studentId,
+                Grade = 5,
+                Attended = null
+            }
+        }
             };
+
             var result = await _journalService.UpdateJournal(lessonId, request);
             result.Should().NotBeNull();
+            result.Items.Should().HaveCount(1);
+            result.Items[0].Grade.Should().Be(5);
         }
 
         [Fact]
