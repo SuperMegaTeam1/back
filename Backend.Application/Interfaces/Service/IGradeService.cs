@@ -10,8 +10,10 @@ namespace Backend.Application.Interfaces
 {
     public interface IGradeService
     {
-        Task<UpdateLessonMarkResult> UpdateGrade(Guid gradeId,
-             int? grade,
-             bool? attended);
+        Task<UpdateLessonMarkResult> UpdateGrade(
+            Guid teacherId,
+            Guid gradeId,
+            int? grade,
+            bool? attended);
     }
 }
