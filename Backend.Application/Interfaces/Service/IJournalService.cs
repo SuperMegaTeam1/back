@@ -9,7 +9,7 @@ namespace Backend.Application.Interfaces
 {
     public interface IJournalService
     {
-        Task<JournalResponse> UpdateJournal(Guid lessonId, UpdateJournalRequest request);
+        Task<JournalResponse> UpdateJournal(Guid userId, Guid lessonId, UpdateJournalRequest request);
 
         Task<GroupJournalResponse> GetJournalAsync(Guid subjectId, Guid groupId, Guid teacherUserId);
     }

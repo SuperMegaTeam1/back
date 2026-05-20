@@ -15,20 +15,29 @@ namespace Backend.Application.Services
         private readonly IStudentRepository _studentRepo;
         private readonly IGradeRepository _gradeRepo;
         private readonly IParticipationRepository _participationRepo;
+        private readonly INotificationSender _notificationSender;
+        private readonly INotificationRepository _notificationRepo;
 
         public JournalService(
         ILessonRepository lessonRepo,
         IStudentRepository studentRepo,
         IGradeRepository gradeRepo,
-        IParticipationRepository participationRepo)
+        IParticipationRepository participationRepo,
+        INotificationSender notificationSender,
+        INotificationRepository notificationRepo)
         {
             _lessonRepo = lessonRepo;
             _studentRepo = studentRepo;
             _gradeRepo = gradeRepo;
             _participationRepo = participationRepo;
+            _notificationSender = notificationSender;
+            _notificationRepo = notificationRepo;
         }
 
-        public async Task<JournalResponse> UpdateJournal(Guid lessonId, UpdateJournalRequest request)
+        public async Task<JournalResponse> UpdateJournal(
+            Guid userId,
+            Guid lessonId, 
+            UpdateJournalRequest request)
         {
             var lesson = await _lessonRepo.GetByIdAsync(lessonId);
 
@@ -42,10 +51,20 @@ namespace Backend.Application.Services
 
                 var student = await _studentRepo.GetByIdAsync(item.StudentId)
                     ?? throw new Exception($"Студент {item.StudentId} не найден");
-
+                
                 if (item.Grade != null)
                 {
                     var grade = await _gradeRepo.GetByStudentLesson(item.StudentId, lessonId);
+                    var notification = new Notification
+                    {
+                        SenderId = userId,
+                        ReceiverId = item.StudentId,
+                        Title = "Выставлена оценка",
+                        Body = $"Вам поставили оценку {item.Grade}",
+                        IsRead = false,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    };
 
                     if (grade == null)
                     {
@@ -58,12 +77,17 @@ namespace Backend.Application.Services
                         };
 
                         await _gradeRepo.AddAsync(grade);
+            
+                        
                     }
                     else
                     {
                         grade.Grade = item.Grade.Value;
                     }
-
+                  
+                    await _notificationRepo.CreateNotificationAsync(notification);
+                    await _notificationSender.SendNotificationAsync(notification);
+                    
                     var participation = await _participationRepo.Get(item.StudentId, lessonId);
 
                     if (participation == null)
@@ -97,6 +121,8 @@ namespace Backend.Application.Services
                         };
 
                         await _participationRepo.AddAsync(participation);
+                        
+                        
                     }
                     else
                     {

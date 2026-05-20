@@ -26,7 +26,15 @@ namespace Backend.Api.Controllers
             Guid lessonId,
             [FromBody] UpdateJournalRequest request)
         {
-            var result = await _journalService.UpdateJournal(lessonId, request);
+            var userValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (!Guid.TryParse(userValue, out var userId))
+            {
+                return Unauthorized();
+            }
+            
+            var result = await _journalService.UpdateJournal(userId, lessonId, request);
+            
             return Ok(result);
         }
 
