@@ -25,8 +25,8 @@ namespace Backend.Tests.Unit.Services
             _studentRepo = new Mock<IStudentRepository>();
             _gradeRepo = new Mock<IGradeRepository>();
             _participationRepo = new Mock<IParticipationRepository>();
-            _notificationSender = new Mock<INotificationSender>(); // ✅ до создания сервиса
-            _notificationRepo = new Mock<INotificationRepository>(); // ✅ до создания сервиса
+            _notificationSender = new Mock<INotificationSender>();
+            _notificationRepo = new Mock<INotificationRepository>();
 
             _journalService = new JournalService(
                 _lessonRepo.Object,
