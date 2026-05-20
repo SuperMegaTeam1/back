@@ -36,7 +36,8 @@ namespace Backend.Application.Services
             bool? attended)
         {
             var studentGrade = await _gradeRepo.GetByIdAsync(gradeId);
-
+            var studentId = studentGrade?.StudentId ?? gradeId;
+            
             if (studentGrade == null)
                 throw new Exception("Оценка не найдена");
 
@@ -78,7 +79,7 @@ namespace Backend.Application.Services
             var notification = new Notification
             {
                 SenderId = teacherId,
-                ReceiverId = studentGrade.StudentId,
+                ReceiverId = studentId,
                 Title = "Выставлена оценка",
                 Body = $"Вам поставили оценку {grade}",
                 IsRead = false,
