@@ -44,6 +44,12 @@ public class NotificationRepository : INotificationRepository
         await _dbContext.SaveChangesAsync();
     }
     
+    public async Task CreateNotificationAsync(Notification notifications)
+    {
+        await _dbContext.Notifications.AddAsync(notifications);
+        await _dbContext.SaveChangesAsync();
+    }
+    
     public async Task<IReadOnlyCollection<Notification>?> GetNotificationsStudentAsync(Guid receiverId)
     {
         return await _dbContext.Notifications

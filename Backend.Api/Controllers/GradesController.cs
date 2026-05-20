@@ -1,4 +1,5 @@
-﻿using Backend.Application.Interfaces;
+﻿using System.Security.Claims;
+using Backend.Application.Interfaces;
 using Backend.Application.Models.Journal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -23,10 +24,19 @@ namespace Backend.Api.Controllers
             Guid gradeId,
             [FromBody] UpdateGradeRequest request)
         {
+            var userValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (!Guid.TryParse(userValue, out var userId))
+            {
+                return Unauthorized();
+            }
+            
             var result = await _gradeService.UpdateGrade(
+                 userId,
                  gradeId,
                  request.Grade,
                  request.Attended);
+            
             return Ok(new
             {
                 id = gradeId,

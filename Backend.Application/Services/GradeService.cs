@@ -13,19 +13,31 @@ namespace Backend.Application.Services
     {
         private readonly IGradeRepository _gradeRepo;
         private readonly IParticipationRepository _participationRepo;
-        public GradeService(IGradeRepository gradeRepo, IParticipationRepository participationRepo)
+        private readonly INotificationRepository _notificationRepo;
+        private readonly INotificationSender _notificationSender;
+        
+        public GradeService(
+            IGradeRepository gradeRepo,
+            IParticipationRepository participationRepo,
+            INotificationRepository notificationRepo,
+            INotificationSender notificationSender
+            )
         {
             _gradeRepo = gradeRepo;
             _participationRepo = participationRepo;
+            _notificationRepo = notificationRepo;
+            _notificationSender = notificationSender;
         }
 
         public async Task<UpdateLessonMarkResult> UpdateGrade(
-       Guid gradeId,
-       int? grade,
-       bool? attended)
+            Guid teacherId,
+            Guid gradeId,
+            int? grade,
+            bool? attended)
         {
             var studentGrade = await _gradeRepo.GetByIdAsync(gradeId);
-
+            var studentId = studentGrade?.StudentId ?? gradeId;
+            
             if (studentGrade == null)
                 throw new Exception("Оценка не найдена");
 
@@ -64,6 +76,21 @@ namespace Backend.Application.Services
             await _gradeRepo.SaveChangesAsync();
             await _participationRepo.SaveChangesAsync();
 
+            var notification = new Notification
+            {
+                SenderId = teacherId,
+                ReceiverId = studentId,
+                Title = "Выставлена оценка",
+                Body = $"Вам поставили оценку {grade}",
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            
+            await _notificationRepo.CreateNotificationAsync(notification);
+            await _notificationSender.SendNotificationAsync(notification);
+            
+            
             return new UpdateLessonMarkResult
             {
                 StudentId = studentGrade?.StudentId ?? participation.StudentId,

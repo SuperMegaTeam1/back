@@ -6,6 +6,7 @@ namespace Backend.Application.Interfaces;
 
 public interface INotificationRepository
 {
+    Task CreateNotificationAsync(Notification notification);
     Task<IReadOnlyCollection<NotificationResult>> GetNotificationsAsync(Guid userId);
     Task CreateNotificationsAsync(List<Notification> notifications);
     Task<IReadOnlyCollection<Notification>?> GetNotificationsStudentAsync(Guid receiverId);
