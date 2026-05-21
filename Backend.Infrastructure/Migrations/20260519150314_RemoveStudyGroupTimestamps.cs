@@ -10,12 +10,12 @@ namespace Backend.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "CreatedAt",
-                table: "StudyGroups");
-            migrationBuilder.DropColumn(
-                name: "UpdatedAt",
-                table: "StudyGroups");
+            //migrationBuilder.DropColumn(
+            //    name: "CreatedAt",
+            //    table: "StudyGroups");
+            //migrationBuilder.DropColumn(
+            //    name: "UpdatedAt",
+            //    table: "StudyGroups");
         }
 
         /// <inheritdoc />
