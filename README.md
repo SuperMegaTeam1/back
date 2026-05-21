@@ -44,7 +44,7 @@ teacher@test.com / Test123!
 
 В корне проекта <ваш путь>\>
     ```docker compose up --build``` - собираем
-    ```docker compouse up``` - запускаем 
+    ```docker compose up``` - запускаем 
     ```docker ps``` - можем проверить запустились ли наши контейнеры
 
 Здесь лицезреем:
