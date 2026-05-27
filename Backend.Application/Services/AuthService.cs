@@ -23,6 +23,7 @@ namespace Backend.Application.Services
 
             if (user is null)
             {
+                Console.WriteLine("Z tut");
                 return null;
             }
 
@@ -30,6 +31,7 @@ namespace Backend.Application.Services
 
             if (!passwordValid)
             {
+                Console.WriteLine("Z password");
                 return null;
             }
 

@@ -157,15 +157,19 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapHub<NotificationHub>("/notification");
 
-app.MapControllers();
 if (!app.Environment.IsEnvironment("Testing"))
 {
-    app.UseHangfireDashboard();
+    app.UseHangfireDashboard("/hangfire", new DashboardOptions
+    {
+        Authorization = new[] { new AllowAllDashboardAuthorizationFilter() }
+    });
     RecurringJob.AddOrUpdate<IRatingService>(
     "update-student-ratings",
     service => service.UpdateRatingsAsync(),
     "0 2 * * *"); // каждый день в 02:00
 }
+
+app.MapControllers();
 
 app.Run();  
 
