@@ -2,40 +2,53 @@
 
 ## Инструкция по установке:
 
-1. Подтягиваем изменения из промежуточной ветки dev:
 
-    ```git pull origin dev```
+1. Подтягиваем изменения из ветки main:
 
-2. Настраиваем *appsettings.json* для работы с БД  согласно примеру в *appsettings.example.json*: 
+    ```git pull origin main```
+
+На проекте стоит, защита от прямого пуша в маин.
+
+2.1. Настраиваем *appsettings.json* для работы с БД  согласно примеру в *appsettings.example.json*: 
 Для этого должна быть создана база данных (```CREATE DATABASE moi-ivmiit-db```).
 Вносим данные своего порта, username, password
 
-3. Установить зависимости:
+2.2 Установить зависимости:
 
     ```dotnet restore```
 
-4. Подтянуть БД из миграций:
+2.4. Подтянуть БД из миграций:
 
     ```dotnet ef database update --project Backend.Infrastructure --startup-project Backend.API```
 
-5. Запустить проект:
+2.5. Запустить проект:
 
     ```dotnet run --project Backend.API```
+
+3. Вариант запуска через докер
+    ```docker compose --build```
 
 При добавлении новых моделей не забывать:
 
     dotnet ef migrations add MigrationName
     dotnet ef database update
 
-Тестовый пользователь данные:
+Тестовый пользователь для проверки учителя данные:
 ```aiignore
 {
-    "email": "test@test.com",
-    "password": "Test123!"
+    "email": "teacher1@test.com",
+    "password": "Password123!"
 }
 
-student@test.com / Test123!
-teacher@test.com / Test123!
+Тестовый пользователь для проверки студента данные:
+```aiignore
+{
+    "email": "student1@test.com",
+    "password": "Password123!"
+}
+
+student1@test.com / Password123!
+teacher1@test.com / Password123!
 ```
 
 ### Докер подъехал!!!
