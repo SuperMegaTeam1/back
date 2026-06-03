@@ -13,6 +13,7 @@ namespace Backend.Tests.Unit.Services
     private readonly Mock<IParticipationRepository> _participationRepo;
     private readonly Mock<INotificationRepository> _notificationRepo;
     private readonly Mock<INotificationSender> _notificationSender;
+    private readonly Mock<IStudentRepository> _studentRepo;
 
     public GradeServiceTests()
     {
@@ -20,6 +21,11 @@ namespace Backend.Tests.Unit.Services
         _participationRepo = new Mock<IParticipationRepository>();
         _notificationRepo = new Mock<INotificationRepository>();
         _notificationSender = new Mock<INotificationSender>();
+        _studentRepo = new Mock<IStudentRepository>();
+
+        _studentRepo
+            .Setup(x => x.GetByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(new Student { Id = Guid.NewGuid(), ParentUserId = Guid.NewGuid() });
     }
 
     private GradeService CreateService() =>
@@ -27,7 +33,8 @@ namespace Backend.Tests.Unit.Services
             _gradeRepo.Object,
             _participationRepo.Object,
             _notificationRepo.Object,
-            _notificationSender.Object);
+            _notificationSender.Object,
+            _studentRepo.Object);
 
     private void SetupParticipation(StudentGrade grade, LessonParticipation? existing = null)
     {
@@ -49,7 +56,16 @@ namespace Backend.Tests.Unit.Services
     public async Task UpdateGrade_ShouldReturnUpdatedGrade()
     {
         var teacherId = Guid.NewGuid();
-        var gradeEntity = new StudentGrade { Id = Guid.NewGuid(), Grade = 3 };
+        var gradeEntity = new StudentGrade
+        {
+            Id = Guid.NewGuid(),
+            Grade = 3,
+            Lesson = new Lesson
+            {
+                StartsAt = new DateTime(2026, 6, 2),
+                Subject = new SubjectEntity { Name = "Математика" }
+            }
+        };
 
         _gradeRepo.Setup(x => x.GetByIdAsync(gradeEntity.Id)).ReturnsAsync(gradeEntity);
         _gradeRepo.Setup(x => x.SaveChangesAsync()).Returns(Task.CompletedTask);
@@ -116,7 +132,16 @@ namespace Backend.Tests.Unit.Services
     public async Task UpdateGrade_ShouldSendNotification()
     {
         var teacherId = Guid.NewGuid();
-        var gradeEntity = new StudentGrade { Id = Guid.NewGuid(), Grade = 3 };
+        var gradeEntity = new StudentGrade
+        {
+            Id = Guid.NewGuid(),
+            Grade = 3,
+            Lesson = new Lesson
+            {
+                StartsAt = new DateTime(2026, 6, 2),
+                Subject = new SubjectEntity { Name = "Математика" }
+            }
+        };
 
         _gradeRepo.Setup(x => x.GetByIdAsync(gradeEntity.Id)).ReturnsAsync(gradeEntity);
         _gradeRepo.Setup(x => x.SaveChangesAsync()).Returns(Task.CompletedTask);

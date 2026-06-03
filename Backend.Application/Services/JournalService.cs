@@ -17,6 +17,7 @@ namespace Backend.Application.Services
         private readonly IParticipationRepository _participationRepo;
         private readonly INotificationSender _notificationSender;
         private readonly INotificationRepository _notificationRepo;
+        private readonly ISubjectRepository _subjectRepo;
 
         public JournalService(
         ILessonRepository lessonRepo,
@@ -24,7 +25,8 @@ namespace Backend.Application.Services
         IGradeRepository gradeRepo,
         IParticipationRepository participationRepo,
         INotificationSender notificationSender,
-        INotificationRepository notificationRepo)
+        INotificationRepository notificationRepo,
+        ISubjectRepository subjectRepo)
         {
             _lessonRepo = lessonRepo;
             _studentRepo = studentRepo;
@@ -32,6 +34,7 @@ namespace Backend.Application.Services
             _participationRepo = participationRepo;
             _notificationSender = notificationSender;
             _notificationRepo = notificationRepo;
+            _subjectRepo = subjectRepo;
         }
 
         public async Task<JournalResponse> UpdateJournal(
@@ -55,12 +58,13 @@ namespace Backend.Application.Services
                 if (item.Grade != null)
                 {
                     var grade = await _gradeRepo.GetByStudentLesson(item.StudentId, lessonId);
+                    var subjectName = await _subjectRepo.GetNameByIdAsync(lesson.SubjectId);
                     var notification = new Notification
                     {
                         SenderId = userId,
-                        ReceiverId = item.StudentId,
-                        Title = "Выставлена оценка",
-                        Body = $"Вам поставили оценку {item.Grade}",
+                        ReceiverId = student.ParentUserId,
+                        Title = subjectName,
+                        Body = $"Вам поставили {item.Grade} за пару {lesson.StartsAt:dd.MM.yyyy}",
                         IsRead = false,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow
