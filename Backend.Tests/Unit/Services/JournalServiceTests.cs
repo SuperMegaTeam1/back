@@ -17,6 +17,7 @@ namespace Backend.Tests.Unit.Services
         private readonly Mock<IParticipationRepository> _participationRepo;
         private readonly Mock<INotificationSender> _notificationSender;
         private readonly Mock<INotificationRepository> _notificationRepo;
+        private readonly Mock<ISubjectRepository> _subjectRepo;
         private readonly IJournalService _journalService;
 
         public JournalServiceTests()
@@ -27,6 +28,7 @@ namespace Backend.Tests.Unit.Services
             _participationRepo = new Mock<IParticipationRepository>();
             _notificationSender = new Mock<INotificationSender>();
             _notificationRepo = new Mock<INotificationRepository>();
+            _subjectRepo = new Mock<ISubjectRepository>();
 
             _journalService = new JournalService(
                 _lessonRepo.Object,
@@ -34,7 +36,8 @@ namespace Backend.Tests.Unit.Services
                 _gradeRepo.Object,
                 _participationRepo.Object,
                 _notificationSender.Object,
-                _notificationRepo.Object);
+                _notificationRepo.Object,
+                _subjectRepo.Object);
         }
 
         [Fact]
@@ -43,6 +46,12 @@ namespace Backend.Tests.Unit.Services
             var userId = Guid.NewGuid();
             var lessonId = Guid.NewGuid();
             var studentId = Guid.NewGuid();
+            var subjectId = Guid.NewGuid();
+
+            _lessonRepo.Setup(x => x.GetByIdAsync(lessonId))
+                .ReturnsAsync(new Lesson { Id = lessonId, SubjectId = subjectId, StartsAt = new DateTime(2026, 6, 2) });
+            _subjectRepo.Setup(x => x.GetNameByIdAsync(subjectId))
+                .ReturnsAsync("Математика");
 
             _studentRepo.Setup(x => x.GetByIdAsync(studentId))
                 .ReturnsAsync(new Student { Id = studentId, StudyGroupId = Guid.NewGuid() });

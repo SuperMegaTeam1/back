@@ -39,6 +39,8 @@ namespace Backend.Infrastructure.Repositories
         public async Task<StudentGrade?> GetByIdAsync(Guid gradeId)
         {
             return await _db.StudentGrades
+                .Include(x => x.Lesson)
+                    .ThenInclude(l => l.Subject)
                 .FirstOrDefaultAsync(x => x.Id == gradeId);
         }
 

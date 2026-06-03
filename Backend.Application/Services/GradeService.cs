@@ -15,18 +15,21 @@ namespace Backend.Application.Services
         private readonly IParticipationRepository _participationRepo;
         private readonly INotificationRepository _notificationRepo;
         private readonly INotificationSender _notificationSender;
-        
+        private readonly IStudentRepository _studentRepo;
+
         public GradeService(
             IGradeRepository gradeRepo,
             IParticipationRepository participationRepo,
             INotificationRepository notificationRepo,
-            INotificationSender notificationSender
+            INotificationSender notificationSender,
+            IStudentRepository studentRepo
             )
         {
             _gradeRepo = gradeRepo;
             _participationRepo = participationRepo;
             _notificationRepo = notificationRepo;
             _notificationSender = notificationSender;
+            _studentRepo = studentRepo;
         }
 
         public async Task<UpdateLessonMarkResult> UpdateGrade(
@@ -36,10 +39,12 @@ namespace Backend.Application.Services
             bool? attended)
         {
             var studentGrade = await _gradeRepo.GetByIdAsync(gradeId);
-            var studentId = studentGrade?.StudentId ?? gradeId;
-            
+
             if (studentGrade == null)
                 throw new Exception("Оценка не найдена");
+
+            var student = await _studentRepo.GetByIdAsync(studentGrade.StudentId)
+                ?? throw new Exception("Студент не найден");
 
             var participation = await _participationRepo.Get(
                 studentGrade.StudentId,
@@ -76,21 +81,24 @@ namespace Backend.Application.Services
             await _gradeRepo.SaveChangesAsync();
             await _participationRepo.SaveChangesAsync();
 
-            var notification = new Notification
+            if (grade.HasValue)
             {
-                SenderId = teacherId,
-                ReceiverId = studentId,
-                Title = "Выставлена оценка",
-                Body = $"Вам поставили оценку {grade}",
-                IsRead = false,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
-            
-            await _notificationRepo.CreateNotificationAsync(notification);
-            await _notificationSender.SendNotificationAsync(notification);
-            
-            
+                var notification = new Notification
+                {
+                    SenderId = teacherId,
+                    ReceiverId = student.ParentUserId,
+                    Title = $"{studentGrade.Lesson.Subject.Name}",
+                    Body = $"Вам поставили {grade} за пару {studentGrade.Lesson.StartsAt:dd.MM.yyyy}",
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                await _notificationRepo.CreateNotificationAsync(notification);
+                await _notificationSender.SendNotificationAsync(notification);
+            }
+
+
             return new UpdateLessonMarkResult
             {
                 StudentId = studentGrade?.StudentId ?? participation.StudentId,
